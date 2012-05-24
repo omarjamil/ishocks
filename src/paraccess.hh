@@ -34,6 +34,7 @@ extern double exteGammaMax;
 extern double extnuMin;
 extern double extnuMax;
 extern int extnuPoints;
+extern int extgammaPoints;
 extern bool extindivFreq;
 extern double extnu1;
 extern double extnu2;

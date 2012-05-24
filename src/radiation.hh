@@ -32,9 +32,11 @@ public:
   
   //Synchrotron absorption coefficient
   double synchrotronAbsor(double &, double &, double &, double &);
+
 private:
   std::vector<double> *nu;
   std::vector<double> *iNu;
+ 
     
   
  

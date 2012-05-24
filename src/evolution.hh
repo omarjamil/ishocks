@@ -26,27 +26,27 @@
 class Evolution
 {
 public:
-  Evolution(Container *); 
+  Evolution(Container *);
   //Evolution(const Evolution &c);
   ~Evolution();
   //protected:
-  
-  //this runs the simulation based on time steps that are simply 
+
+  //this runs the simulation based on time steps that are simply
   //"events" i.e. injection or merger.
   void evolve(int &);
-  
+
   //this runs the simulation with increases samplings
   //appropriate for sampling shells without the need of
   //"event".
   void evolveIncrSampling(int &);
-  
+
 
   void continueEvol(double &, Container *);
-  
-  
+
+
   //the min of all the collision times for active shells
   double minCollisionTime(Container *, std::vector<Mergers*> &);
-  
+
   //calculating the collision time for two shells
   double collisionTime(Shells *, Shells *);
 
@@ -57,13 +57,15 @@ public:
 
   void results(Container *, std::vector<double> *, double &,
                std::vector<double> *, std::vector<double> *);
-  
+
   //function to populate the frequencies container
   //logarithmic ranging
   void freqRange(std::vector<double> *);
-  
+  //electron gamma range
+  void gammaRange(std::vector<double> *);
+
   void avgLC(std::vector<double> *, std::vector<double> *);
-  
+
   void finalTStep(Container *, std::vector<double> *,
                  double &);
 
@@ -71,15 +73,16 @@ public:
                  double &);
 
   void tauWrite(Container *, std::vector<double> *);
-  
+
   void splitLightcurve(Container *, double &);
-  
+
 private:
   //evolving the following Shells containers
   //being passed as pointers to Evolution class
   Container *activeShells;
   Mergers *merger;
-  std::vector<double> *nu;
+  std::vector<double> *nu, *egamma, *comptonVect;
+
   //std::vector<double> *nuCont;
   //std::vector<double> *iNu;
   std::vector<double> *fluxNu1;
@@ -87,9 +90,10 @@ private:
   //std::vector<double> *fluxNu1Cont;
   //std::vector<double> *fluxNu2Cont;
   bool fileExists(const std::string& );
-  
-  
-  
+  std::vector<double> compVector;
+  void compTable(std::vector<double> *, std::vector<double> *);
+
+
 
 };
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....

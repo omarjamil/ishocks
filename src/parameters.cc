@@ -142,6 +142,10 @@ void Parameters::loadParametersFile(std::string filename)
         {
           parameterFile >> dummy >> nuPoints_;
         }
+      else if(label == "gamma_points")
+        {
+          parameterFile >> dummy >> gammaPoints_;
+        }
       else if(label == "individual_frequencies")
         {
           parameterFile >> dummy >> dummy2;

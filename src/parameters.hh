@@ -129,6 +129,11 @@ public:
   {
     return nuPoints_;
   }
+
+  int gammaPoints()
+  {
+    return gammaPoints_;
+  }
   
   bool indivFreq()
   {
@@ -295,6 +300,7 @@ private:
   double nuMin_;
   double nuMax_;
   int nuPoints_;
+  int gammaPoints_;
   bool individual_frequencies_;
   double nu_1_;
   double nu_2_;

@@ -5,7 +5,7 @@ SOURCES.cc = numerical.cc parameters.cc paraccess.cc shells.cc radiation.cc cont
 INCLUDES = 
 CPP = g++
 CFLAGS = 
-CPPFLAGS = -O3 
+CPPFLAGS = -O3 -W
 LIBS = 
 
 # the executable file

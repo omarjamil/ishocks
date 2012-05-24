@@ -36,6 +36,7 @@ double exteGammaMax = params.eGammaMax();
 double extnuMin = params.nuMin();
 double extnuMax = params.nuMax();
 int extnuPoints = params.nuPoints();
+int extgammaPoints = params.gammaPoints();
 bool extindivFreq = params.indivFreq();
 double extnu1 = params.nu_1();
 double extnu2 = params.nu_2();

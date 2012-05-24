@@ -25,10 +25,10 @@
 #include "radiation.hh"
 
 //used for multi runs and search through parameter space
-//also produces a file with average spectral index and spectral index 
-//in the lightcurve file. Good idea to only have individual frequencies when 
-//using GRID_SEARCH 
-//#define GRID_SEARCH                           
+//also produces a file with average spectral index and spectral index
+//in the lightcurve file. Good idea to only have individual frequencies when
+//using GRID_SEARCH
+//#define GRID_SEARCH
 
 //****TEMPORARY??****
 //reads the file splitLC.par
@@ -38,7 +38,7 @@
 //if TAU_WRITE defined then the finalTStau.dat file is written. This file
 //has the optical depths of all the shells at final time step.
 #define TAU_WRITE
-  
+
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 
 
@@ -66,10 +66,10 @@ void Evolution::evolve(int &duration)
 {
   try
     {
-      
+
       Container::const_iterator all, next;
       Container::iterator locator, active, inLocate, ouLocate;
-      
+
       double col_t;
       double dt_collision, dt_next, t_now, t_prev;
       double t_inner = 0.0, t_outer = 0.0;
@@ -83,9 +83,17 @@ void Evolution::evolve(int &duration)
 
       //the range of freq for getting the synchrtron spectrum
       nu = new std::vector<double>;
+      egamma = new std::vector<double>;
+      
+      //populating the gamma container (duplicate of the one in Shells)
+      gammaRange(egamma);
+      
       //populating the freq container
       freqRange(nu);
-      
+
+      //Compton Table
+      compTable(nu, egamma);
+
       //For getting the average flux
       fluxNu1 = new std::vector<double>;
       fluxNu2 = new std::vector<double>;
@@ -100,7 +108,7 @@ void Evolution::evolve(int &duration)
       std::vector<double>::const_iterator shellGT;
       std::vector<double>::const_iterator shellLT;
       int tCountPrev = 0;
-      
+
       //load the previous simulation
       if(readPrev)
         {
@@ -111,96 +119,96 @@ void Evolution::evolve(int &duration)
       // just a way to call shellData routine here
       //activeShells->coutContainerElements();
       activeShells->shellData(shellI, shellM, shellG, shellL);
-      
+
       //Radiation object to obtain the spectrum
       Radiation spectrum;
-      
+
       //contains the merger shells info
       //returned by minCollisionTime
       std::vector<Mergers*> mergerEvent;
       //the last shell
       t_last = shellI.back();
-      
+
       double iS, mS, gS, lS;
-      //the very first shell; will not collide with anything   
+      //the very first shell; will not collide with anything
       shellIT = shellI.begin();
       shellMT = shellM.begin();
       shellGT = shellG.begin();
       shellLT = shellL.begin();
       iS = *shellIT; mS = *shellMT; gS = *shellGT; lS = *shellLT;
       activeShells->injectShell(iS, mS, gS, lS);
-      
+
       //the next shell
       shellITNext = shellI.begin();
-      
+
       //t_now = (*all)->getTimeOfInjection();
       t_now = *shellIT;
-      
-      
+
+
       //One shell ahead of "all"
       ++shellITNext;
       t_next = *shellITNext;
-      
+
       int tCount = 1;
       int tCount2 = 1;
       int mCount = 0;
-      
+
       std::cout<<"Running the simulation, jet on (shells + mergers)..."<<std::endl;
-      
-      while(*shellITNext != shellI.back())  
+
+      while(*shellITNext != shellI.back())
         {
           //the shell to be injected into activeshells
           ++shellIT; ++shellMT; ++shellGT; ++shellLT;
           iS = *shellIT; mS = *shellMT; gS = *shellGT; lS = *shellLT;
           t_now = *shellIT;
-          
+
           activeShells->injectShell(iS, mS, gS, lS);
           activeShells->updateShellParams(t_now);
-          
-          //to check for overlaps 
-          activeShells->overlapPrevention(t_now);      
-          
+
+          //to check for overlaps
+          activeShells->overlapPrevention(t_now);
+
           spectrum.synchSpectrum(nu, activeShells);
           //std::cout<<t_now<<"\t"<<"injection"<<std::endl;
-          
+
 #ifndef GRID_SEARCH
           results(activeShells, nu, t_now, tCount);
 #endif
-          
+
 #ifdef GRID_SEARCH
           results(activeShells, nu, t_now, fluxNu1, fluxNu2);
-#endif      
+#endif
           //time step count
           tCount += 1;
           //tCount2 += 1;
-      
+
           //std::cout<<"\r"<<"Time step.................................: "<<tCount2;
-          
+
           //the next shell to be injected
           ++shellITNext;
           t_next = *shellITNext;
           dt_next = t_next - t_now;
-          
+
           //the following loop does mergers as long as they are before the
           //time for next injection
           do
             {
               mergerEvent.clear();
               dt_collision = minCollisionTime(activeShells, mergerEvent);
-              
+
               if (dt_collision > 0.0 && dt_collision <= dt_next)
-                {                   
+                {
                   if(!mergerEvent.empty())
                     {
-                      
+
                       t_now += dt_collision;
                       dt_next -= dt_collision;
-                      
+
                       merger = new Mergers(*mergerEvent[0]);
                       //deleting the mergers objects and pointers.
                       std::for_each(mergerEvent.begin(), mergerEvent.end(), delete_ptr<Mergers>());
                       mergerEvent.clear();
-                      
+
                       activeShells->updateShellParams(t_now);
                       merger->doMerger(activeShells, t_now);
                       delete merger;
@@ -209,22 +217,22 @@ void Evolution::evolve(int &duration)
 #ifndef GRID_SEARCH
                       results(activeShells, nu, t_now, tCount);
 #endif
-                      
+
 #ifdef GRID_SEARCH
                       results(activeShells, nu, t_now, fluxNu1, fluxNu2);
-#endif                
-                      activeShells->overlapPrevention(t_now);            
+#endif
+                      activeShells->overlapPrevention(t_now);
                       mCount += 1;
                       //tCount2 += 1;
                       //std::cout<<"\r"<<"Time step.................................: "<<tCount2;
                       //to catch any collision for the newly merged shell
                       dt_collision = minCollisionTime(activeShells, mergerEvent);
-                    } else 
+                    } else
                     {
                       std::cerr<<"Error! No Merger calculated"<<"\n";
                     }
                 }
-              else 
+              else
                 {
                   break;
                 }
@@ -232,21 +240,21 @@ void Evolution::evolve(int &duration)
             }
           while (dt_collision <= dt_next);
           //std::cout<<t_now<<std::endl;
-                    
+
           //this should inject the last shell
-          if (*shellITNext == t_last) 
+          if (*shellITNext == t_last)
             {
-              iS = shellI.back(); 
-              mS = shellM.back(); 
-              gS = shellG.back(); 
+              iS = shellI.back();
+              mS = shellM.back();
+              gS = shellG.back();
               lS = shellL.back();
               activeShells->injectShell(iS, mS, gS, lS);
               tCount += 1;
               //std::cout<<gS<<std::endl;
-              
+
               break; //to break the while loop at the end of allShells
             }
-          
+
           //this checks the if "exitNow" file exists. If it is created then
           //the programme exits and writes the final time step before doing so.
           exitF = fileExists(exitFile);
@@ -254,12 +262,12 @@ void Evolution::evolve(int &duration)
             {
               std::cout<<"exitNow file detected"<<"\n"
                        <<"writing final time step files"<<std::endl;
-              
-                       
+
+
               bool finalTS = extFinalTStep;
               if(finalTS)
                 {
-                  
+
                   finalTStep(activeShells, nu, t_now);
 #ifdef TAU_WRITE
                   finalTStepTau(activeShells, nu, t_now);
@@ -268,29 +276,29 @@ void Evolution::evolve(int &duration)
               std::cout<<"calling exit(0) in Evolution::evolve"<<std::endl;
               activeShells->dumpActiveShells();
               exit(0);
-              
+
             }
-          
+
 
         }
       //to write the last time step to the "lastTStep.dat"
       bool finalTS = extFinalTStep;
       if(finalTS)
         {
-          
+
           finalTStep(activeShells, nu, t_now);
-          
+
 #ifdef TAU_WRITE
           finalTStepTau(activeShells, nu, t_now);
 #endif
         }
-      
+
       //To continue evolution after jet has been turned off...
       //continueEvol(t_now, activeShells);
-      
-#ifdef GRID_SEARCH 
+
+#ifdef GRID_SEARCH
       avgLC(fluxNu1, fluxNu2);
-#endif  
+#endif
       std::cout<<"Number of shells loaded from previous sim: "<<tCountPrev<<"\n";
       std::cout<<"Number of shells injected: "<<tCount<<"\n";
       std::cout<<"Number of mergers: "<<mCount<<"\n";
@@ -306,7 +314,7 @@ void Evolution::evolve(int &duration)
       std::cerr<<"Memory exhauseted in evolve;Evolution.cc\n";
       activeShells->dumpActiveShells();
     }
-  
+
 }
 
 
@@ -316,14 +324,14 @@ void Evolution::evolveIncrSampling(int &duration)
 {
   try
     {
-      
+
       std::cout<<"Increase Time sampling, making it \"more\" discrete steps"<<std::endl;
       std::cout<<"Time step resolution (~s): "<<extStepResolution<<std::endl;
       std::cout<<"Total run time (s): "<<extTotalDuration<<std::endl;
-      
+
       Container::const_iterator all, next;
       Container::iterator locator, active, inLocate, ouLocate;
-      
+
       const std::string exitFile = "exitNow";
       bool exitF;
       bool readPrev = extLoadPrevSim;
@@ -332,10 +340,10 @@ void Evolution::evolveIncrSampling(int &duration)
       double col_t, dt_collision, dt_next, t_now = 0.0;
       double t_last, t_next, dtIncr;
       double t_max = extTotalDuration;
-      double t_incr = extStepResolution; 
+      double t_incr = extStepResolution;
       int tCount = 1, mCount = 0, shCount = 0; //timestep and merger count
       int tCountPrev = 0;
-      nu = new std::vector<double>; //container for the frequencies 
+      nu = new std::vector<double>; //container for the frequencies
       freqRange(nu); //populating the freq container
       //For getting the average flux
       fluxNu1 = new std::vector<double>;
@@ -361,7 +369,7 @@ void Evolution::evolveIncrSampling(int &duration)
       // does not do anything to activeShells
       // just a way to call shellData routine here
       activeShells->shellData(shellI, shellM, shellG, shellL);
-      
+
       //Ghost shell necessary for injecting the final shell
       //the ghost shell itself is not injected.
       double tGhost = 1.e-6; double mGhost = 1.; double gGhost = 1.;
@@ -374,111 +382,111 @@ void Evolution::evolveIncrSampling(int &duration)
       Radiation spectrum; //Radiation object to obtain the spectrum
       std::vector<Mergers*> mergerEvent; //contains the merger shells info
       //returned by minCollisionTime
-      
+
       //the final shell time
       t_last = shellI.back();
-      
-            
-      //the very first shell; 
-      //will not collide with anything   
-      
+
+
+      //the very first shell;
+      //will not collide with anything
+
       double iS, mS, gS, lS;
       shellIT = shellI.begin();
       shellMT = shellM.begin();
       shellGT = shellG.begin();
       shellLT = shellL.begin();
       iS = *shellIT; mS = *shellMT; gS = *shellGT; lS = *shellLT;
-      
+
       activeShells->injectShell(iS, mS, gS, lS);
 
       shCount += 1;
       t_now = *shellIT;
-      
+
       //the next shell
       shellITNext = shellI.begin();
-      
-      if(*(shellIT) != shellI.back())  
-        {      
+
+      if(*(shellIT) != shellI.back())
+        {
           //One shell ahead of "all"
           ++shellITNext;
           t_next = *shellITNext;
           dt_next = t_next - t_now;
-          
+
         }
       std::cout<<"Running the simulation, jet on (shells + mergers)..."<<std::endl;
-  
+
       while(t_now < t_max)
         {
-          
-          
+
+
           dtIncr = t_incr;
-          
-          if(*(shellITNext) == t_last)  
-            {           
-              dt_next = t_max; //So that the conditions are met in order to 
+
+          if(*(shellITNext) == t_last)
+            {
+              dt_next = t_max; //So that the conditions are met in order to
               //carry on collisions after the injections are complete.
             }
-          else 
-            {          
+          else
+            {
               dt_next = *shellITNext - t_now;
             }
-           
-                                
+
+
           dt_collision = minCollisionTime(activeShells, mergerEvent);
           //std::cout<<dtIncr<<"\t"<<dt_next<<"\t"<<dt_collision<<std::endl;
-          
+
           //Loop for injecting shells
           while(dt_next <= dtIncr && dt_next < dt_collision)
             {
-              if(*(shellITNext) == t_last)  
+              if(*(shellITNext) == t_last)
                 {
                   break; //to break the while loop at the end of allShells
                 }
-              
+
               ++shellIT; ++shellMT; ++shellGT; ++shellLT;
               iS = *shellIT; mS = *shellMT; gS = *shellGT; lS = *shellLT;
               t_now = *shellIT;
-              
+
               activeShells->injectShell(iS, mS, gS, lS);
-                            
+
               shCount += 1;
               activeShells->updateShellParams(t_now);
-              activeShells->overlapPrevention(t_now); //to check for overlaps 
+              activeShells->overlapPrevention(t_now); //to check for overlaps
               spectrum.synchSpectrum(nu, activeShells);//the spectrum from the shells.
 #ifndef GRID_SEARCH
               results(activeShells, nu, t_now, tCount);
 #endif
-              
+
 #ifdef GRID_SEARCH
               results(activeShells, nu, t_now, fluxNu1, fluxNu2);
-#endif    
+#endif
               tCount += 1; //time step count
-              
-              if(*(shellIT) != shellI.back())  
-                {      
+
+              if(*(shellIT) != shellI.back())
+                {
                   //One shell ahead of "all"
                   ++shellITNext;
                   t_next = *shellITNext;
                 }
-              
+
               dtIncr -= dt_next;
               dt_collision = minCollisionTime(activeShells, mergerEvent);
-              
+
               t_next = *shellITNext;
               dt_next = t_next - t_now;
-                      
+
             }
           //Loop for shell collisions
           while(dt_collision < dt_next && dt_collision < dtIncr)
-            { 
+            {
               mergerEvent.clear();
               dt_collision = minCollisionTime(activeShells, mergerEvent);
               if (dt_collision <= dt_next && dt_collision <dtIncr)
-                { 
+                {
                   if(!mergerEvent.empty())
                     {
                       t_now += dt_collision;
-                      
+
                       dt_next -= dt_collision;
                       dtIncr -=dt_collision;
                       merger = new Mergers(*mergerEvent[0]);
@@ -488,50 +496,50 @@ void Evolution::evolveIncrSampling(int &duration)
                       activeShells->updateShellParams(t_now);
                       merger->doMerger(activeShells, t_now);
                       delete merger;
-                      
+
                       //to catch any collision for the newly merged shell
                       dt_collision = minCollisionTime(activeShells, mergerEvent);
                       spectrum.synchSpectrum(nu, activeShells);
 #ifndef GRID_SEARCH
                       results(activeShells, nu, t_now, tCount);
 #endif
-                  
+
 #ifdef GRID_SEARCH
                       results(activeShells, nu, t_now, fluxNu1, fluxNu2);
-#endif                  
-                      activeShells->overlapPrevention(t_now);            
+#endif
+                      activeShells->overlapPrevention(t_now);
                       mCount += 1;
                       tCount += 1;
-                      
+
                       //std::cout<<"\r"<<"Time step.................................: "<<tCount2;
-                    } else 
+                    } else
                     {
                       std::cerr<<"Error! No Merger calculated"<<"\n";
                     }
                 }
-              else 
+              else
                 {
                   break;
                 }
             }
-          
+
           if(dtIncr > 0.0 && dtIncr < dt_next && dtIncr <dt_collision)
             {
               t_now += dtIncr;
               activeShells->updateShellParams(t_now);
               activeShells->overlapPrevention(t_now);
               spectrum.synchSpectrum(nu, activeShells);
-              
+
 #ifndef GRID_SEARCH
               results(activeShells, nu, t_now, tCount);
 #endif
-              
+
 #ifdef GRID_SEARCH
               results(activeShells, nu, t_now, fluxNu1, fluxNu2);
-#endif                  
+#endif
               tCount += 1;
             }
-         
+
           //this checks the if "exitNow" file exists. If it is created then
           //the programme exits and writes the final time step before doing so.
           exitF = fileExists(exitFile);
@@ -539,12 +547,12 @@ void Evolution::evolveIncrSampling(int &duration)
             {
               std::cout<<"exitNow file detected"<<"\n"
                        <<"writing final time step files"<<std::endl;
-              
-              
+
+
               bool finalTS = extFinalTStep;
               if(finalTS)
                 {
-                  
+
                   finalTStep(activeShells, nu, t_now);
 #ifdef TAU_WRITE
                   finalTStepTau(activeShells, nu, t_now);
@@ -553,11 +561,11 @@ void Evolution::evolveIncrSampling(int &duration)
               std::cout<<"calling exit(0) in Evolution::evolutionIncrSampling"<<std::endl;
               activeShells->dumpActiveShells();
               exit(0);
-              
+
             }
-          
+
         }
-      
+
       //to write the last time step to the "lastTStep.dat"
       bool finalTS = extFinalTStep;
       if(finalTS)
@@ -569,9 +577,9 @@ void Evolution::evolveIncrSampling(int &duration)
 #endif
         }
 
-#ifdef GRID_SEARCH 
+#ifdef GRID_SEARCH
       avgLC(fluxNu1, fluxNu2);
-#endif  
+#endif
       std::cout<<"Number of shells loaded from previous sim: "<<tCountPrev<<"\n";
       std::cout<<"Number of shells injected: "<<shCount<<"\n";
       std::cout<<"Number of mergers: "<<mCount<<"\n";
@@ -587,73 +595,73 @@ void Evolution::evolveIncrSampling(int &duration)
       std::cerr<<"Memory exhauseted in evolveIncrSampling;Evolution.cc\n";
       activeShells->dumpActiveShells();
     }
-  
+
 }
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 
-double Evolution::minCollisionTime(Container *shells, 
+double Evolution::minCollisionTime(Container *shells,
                                    std::vector<Mergers*> &merg)
 {
   try
     {
-            
+
       std::vector<Mergers*> mergingShells;
       std::vector<double> times;
       std::vector<double>::iterator t;
       Container::iterator inner, outer;
-      
+
       double collTime, minTime;
       int itposition;
       double shI, shO, collTPrev=1.e8;
-            
+
       outer = shells->begin();
       inner = shells->begin();
       ++inner;
-      
+
       while(inner != shells->end())
         {
           collTime = collisionTime(*inner, *outer);
-                    
+
           if(collTime < collTPrev && collTime > 0.0)
             {
               collTPrev = collTime;
               shI = (*inner)->getTimeOfInjection();
               shO = (*outer)->getTimeOfInjection();
             }
-          
+
           ++outer;
           ++inner;
-      
+
         }
-      
-      if (collTPrev < 1.e8)  
+
+      if (collTPrev < 1.e8)
         {
-          
+
           minTime = collTPrev;
-          
-          inner = std::find_if(shells->begin(), shells->end(), 
+
+          inner = std::find_if(shells->begin(), shells->end(),
                            FindShellWithDouble(shI));
           outer = std::find_if(shells->begin(), shells->end(),
                                FindShellWithDouble(shO));
-          
+
           merg.push_back(new Mergers(*inner, *outer));
-          
+
           return minTime;
-          
-        } 
+
+        }
       else
         {
           return minTime = 1.e12;
-          
+
         }
-      
+
     }
   catch(std::bad_alloc)
     {
       std::cerr<<"Memory exhauseted in minCollisionTime;Evolution.cc\n";
     }
-  
+
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 double Evolution::collisionTime(Shells *inner, Shells *outer)
@@ -661,7 +669,7 @@ double Evolution::collisionTime(Shells *inner, Shells *outer)
   double t_now = inner->getTimeOfInjection();
   double r_inner = inner->getOuterRadius();
   double r_outer = outer->getInnerRadius();
-  
+
   //double r_inner = inner->getLocation();
   //double r_outer = outer->getLocation();
 
@@ -673,11 +681,11 @@ double Evolution::collisionTime(Shells *inner, Shells *outer)
   double t_inj_outer = outer->getTimeOfInjection();
   double inner_beta_exp = inner->getExpansionBeta();
   double outer_beta_exp = outer->getExpansionBeta();
-  
+
   //from Spada paper
   //this gives the time gap for shell collision
-  // double t_col = ((r_inner - r_outer) - 0.5*(w_outer+w_inner))/ 
-//     (((b_outer*physcon.c) - (b_inner*physcon.c)) + 
+  // double t_col = ((r_inner - r_outer) - 0.5*(w_outer+w_inner))/
+//     (((b_outer*physcon.c) - (b_inner*physcon.c)) +
 //      0.5*(inner_beta_exp*physcon.c + outer_beta_exp*physcon.c));
 
 
@@ -694,41 +702,41 @@ double Evolution::collisionTime(Shells *inner, Shells *outer)
 
 
 //  std::cout<<t_col<<"\t"<<r_outer<<"\t"<<r_inner<<"\t"<<std::endl;
-  
-  
-  // if(t_col<0.0) 
+
+
+  // if(t_col<0.0)
 //     {
 //       std::cout<<"t_col"<<"\t"<<t_col<<std::endl;
 //     }
-  
-//  double t_col = (r_inner - r_outer) /  
-//    (((b_outer*physcon.c) - (b_inner*physcon.c)) + 
+
+//  double t_col = (r_inner - r_outer) /
+//    (((b_outer*physcon.c) - (b_inner*physcon.c)) +
 //      0.5*(inner_beta_exp*physcon.c + outer_beta_exp*physcon.c));
-  
-//  double t_col = (r_outer - r_inner) /  
-//    (((b_inner*physcon.c) - (b_outer*physcon.c)) + 
+
+//  double t_col = (r_outer - r_inner) /
+//    (((b_inner*physcon.c) - (b_outer*physcon.c)) +
 //     0.5*(inner_beta_exp*physcon.c + outer_beta_exp*physcon.c));
 
-    
+
   return t_col;
-                  
+
 }
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-double Evolution::dtNextInjection(Shells *now, 
+double Evolution::dtNextInjection(Shells *now,
                                       Shells *nextShell)
 {
   double t_now = now->getTimeOfInjection();
   double t_next = nextShell->getTimeOfInjection();
   double dt = t_next - t_now;
-  
+
   return dt;
-  
-  
+
+
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 //will not produce any information regarding spectral index
-//this will have to be done manually (post simulation) using the 
+//this will have to be done manually (post simulation) using the
 //lightcurve file.
 void Evolution::results(Container *activeSh, std::vector<double> *nu,
                         double &tNow, int &tCount)
@@ -744,20 +752,20 @@ void Evolution::results(Container *activeSh, std::vector<double> *nu,
   double shGamma;
   double shMass;
   double intEnerTot=0.0, totalEner=0.0;
-  
+
   bool useResFile = extUseResFile;
   int every = extEveryTStep;
-  
+
   std::string filename = extResultsFile;
   std::string lcFilename = extLCFile;
   std::ofstream timeFile(lcFilename.c_str(), std::ofstream::app);
-  
+
   std::vector<double> nuVals(nu->size(), 0.0);
-   
+
   std::vector<double>::iterator nuIt1;
   std::vector<double>::const_iterator nuValIt, nuItConst;
-    
-  //****TEMPORARY??****   
+
+  //****TEMPORARY??****
   bool sp = extSplitLC;
   if(sp)
     {
@@ -769,16 +777,16 @@ void Evolution::results(Container *activeSh, std::vector<double> *nu,
   if(timeFile.is_open())
     {
       timeFile<<std::setiosflags(std::ios::scientific)<<std::setprecision(8)<<tNow;
-      
+
       //timeFile<<tNow;
-      
+
       for(Container::const_iterator sh = activeSh->begin();
           sh != activeSh->end(); ++sh)
           {
             shell = (*sh)->getShellId();
             std::vector<double> iNu = (*sh)->iNuVals();
-            
-            if(!shell) 
+
+            if(!shell)
               {
                 for(nuValIt = iNu.begin(), nuIt1 = nuVals.begin();
                     nuValIt != iNu.end(); ++nuIt1, ++nuValIt)
@@ -787,16 +795,16 @@ void Evolution::results(Container *activeSh, std::vector<double> *nu,
                   }
               }
           }
-      
+
         for(nuItConst = nuVals.begin();
             nuItConst != nuVals.end(); ++nuItConst)
           {
             timeFile<<"\t"<<*nuItConst;
           }
-        
+
         timeFile<<"\n";
         nuVals.clear();
-        
+
       }
   else
     {
@@ -806,17 +814,17 @@ void Evolution::results(Container *activeSh, std::vector<double> *nu,
   //****TEMPORARY??****
     }
   //****??TEMPORARY****
-  
+
 if(useResFile)
   {
     if(tCount % every == 0)
       {
         std::ofstream resultsFile(filename.c_str(), std::ofstream::app);
-        
-        if (resultsFile.is_open()) 
-              { 
+
+        if (resultsFile.is_open())
+              {
                 resultsFile<<std::setiosflags(std::ios::scientific)<<std::setprecision(8);
-                
+
                 for(Container::const_iterator sh = activeSh->begin();
                     sh != activeSh->end(); ++sh)
                   {
@@ -830,20 +838,20 @@ if(useResFile)
                     intEner = (*sh)->getInternalEnergy();
                     shGamma = (*sh)->getShellGamma();
                     shMass = (*sh)->getShellMass();
-                    
+
                     totalEner += shGamma * shMass * physcon.c * physcon.c;
                     intEnerTot += intEner;
-                  
+
                     //std::cout<<bEneDens<<std::endl;
-                                    
+
                     std::vector<double> iNu = (*sh)->iNuVals();
-                    
+
                     if(location >= 0.0 && location <= 1.e20)
                       {
                         resultsFile<<"\n"<<tNow<<"\t"<<location;
-                      if(!shell) 
+                      if(!shell)
                         {
-                          for(std::vector<double>::const_iterator it = iNu.begin(), 
+                          for(std::vector<double>::const_iterator it = iNu.begin(),
                                 it3= nu->begin(); it != iNu.end(); ++it, ++it3)
                             {
                               resultsFile<<"\t"<<*it/1.e-26;
@@ -856,38 +864,38 @@ if(useResFile)
                               it2 != nu->end(); ++it2)
                             {
                               resultsFile<<"\t"<<0.0;
-                              
+
                             }
                           resultsFile<<"\t"<<shWidth;
                         }
                       }
                   }
-           
+
                 totalEner=0.0;
                 intEnerTot=0.0;
-                
+
               resultsFile<<"\n";
               }
-        else 
+        else
           {
             std::cout<<"Error! Unable to open results file"<<std::endl;
           }
         resultsFile.close();
-        
+
         //this writes a file that contains every time step with
         //with each shell location and optical depths. The optical depths
         //will correspond to the frequencies given in nuRange.dat
 #ifdef TAU_WRITE
         tauWrite(activeShells, nu);
-#endif      
+#endif
       }
-    
+
     }
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 //this one is used in GRID_SEARCH mode
 //use individual frequencies in the parameter file
-//so that spectral index can be calculated corresponding to the 
+//so that spectral index can be calculated corresponding to the
 //the two frequencies
 void Evolution::results(Container *activeSh, std::vector<double> *nu,
                         double &tNow, std::vector<double> *fluxNu1,
@@ -913,7 +921,7 @@ void Evolution::results(Container *activeSh, std::vector<double> *nu,
   std::string lcFilename = extLCFile;
   std::ofstream timeFile(lcFilename.c_str(), std::ofstream::app);
   //timeFile.precision(8);
-  
+
   if(timeFile.is_open())
     {
       timeFile<<tNow;
@@ -923,45 +931,45 @@ void Evolution::results(Container *activeSh, std::vector<double> *nu,
         {
           shell = (*sh)->getShellId();
           std::vector<double> iNu = (*sh)->iNuVals();
-                    
-          if(!shell) 
+
+          if(!shell)
             {
               lcRa += iNu[0]/1.e-26;
               lcIR += iNu[1]/1.e-26;
             }
         }
-      
+
       if(lcIR == 0.0 || lcRa == 0.0)
         {
           logFluxRatio = 0.0;
         }
-      else 
+      else
         {
           logFluxRatio = log10(lcIR/lcRa);
         }
-      
+
       specIndex = logFluxRatio/logNuRatio;
       fluxNu1->push_back(lcRa);
       fluxNu2->push_back(lcIR);
-      
+
       timeFile<<"\t"<<lcRa<<"\t"<<lcIR<<"\t"<<specIndex<<"\n";
-      
+
       lcIR = 0.0;
       lcRa = 0.0;
-      
+
     }
   else
     {
       std::cerr<<"Error! Unable to open lightcurve file"<<std::endl;
     }
-  timeFile.close(); 
+  timeFile.close();
 
 if(useResFile)
     {
       std::ofstream resultsFile(filename.c_str(), std::ofstream::app);
-      if (resultsFile.is_open()) 
-        { 
-          
+      if (resultsFile.is_open())
+        {
+
           for(Container::const_iterator sh = activeSh->begin();
               sh != activeSh->end(); ++sh)
           {
@@ -973,16 +981,16 @@ if(useResFile)
             shWidth = outerRadius - innerRadius;//(*sh)->getShellWidth();
             bEneDens = (*sh)->getBEneDens();
             intEner = (*sh)->getInternalEnergy();
-            
-            
+
+
             std::vector<double> iNu = (*sh)->iNuVals();
-            
+
             if(location >= 0.0 && location <= 1.e20)
               {
                 resultsFile<<"\n"<<location;
-                if(!shell) 
+                if(!shell)
                   {
-                    for(std::vector<double>::const_iterator it = iNu.begin(), 
+                    for(std::vector<double>::const_iterator it = iNu.begin(),
                           it3= nu->begin(); it != iNu.end(); ++it, ++it3)
                       {
                         resultsFile<<"\t"<<*it/1.e-26;
@@ -995,7 +1003,7 @@ if(useResFile)
                         it2 != nu->end(); ++it2)
                       {
                         resultsFile<<"\t"<<0.0;
-                        
+
                       }
                     resultsFile<<"\t"<<shWidth;
                   }
@@ -1003,7 +1011,7 @@ if(useResFile)
           }
           resultsFile<<"\n";
         }
-      else 
+      else
         {
           std::cout<<"Error! Unable to open results file"<<std::endl;
         }
@@ -1018,48 +1026,50 @@ void Evolution::freqRange(std::vector<double> *nu)
   bool indivFreq = extindivFreq;
   double nu1 = extnu1;
   double nu2 = extnu2;
-  
+
   if(!indivFreq)
     {
       double min = extnuMin;
       double max = extnuMax;
-  
+
       int nuPoints = extnuPoints;
-  
+
       double abscissa = min;
       double r = pow(max / min, 1.0 / nuPoints);
       double r2 = sqrt(r);
       r -= 1.0;
-      
-      //writing the frequency range file 
+
+      //writing the frequency range file
       //useful when sampling many frequencies
-      
+
       std::ofstream nuFile("nuRange.dat");
       std::cout<<"Log binning for frequency(Hz); written to nuRange.dat "
                <<std::endl;
-      for (int i = 1; i <= nuPoints; ++i) 
+      for (int i = 1; i <= nuPoints; ++i)
         {
           nu->push_back(r2 * abscissa); // Calc log-space mid-point for grid
-          abscissa += (r * abscissa);  // Add grid width to abscissa to find       
+          abscissa += (r * abscissa);  // Add grid width to abscissa to find
           //std::cout<<r2<<"\t"<<(abscissa)<<std::endl;
           nuFile<<r2 * abscissa<<std::endl;
-          
-        }             
-    } 
-  else 
+
+        }
+    }
+  else
     {
       nu->push_back(nu1);
       nu->push_back(nu2);
     }
-  
-  
+
+
 }
+
+
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 void Evolution::avgLC(std::vector<double> *fNu1, std::vector<double> *fNu2)
 {
   std::ofstream avgFile("avgSpecInd.dat", std::ofstream::app);
   std::ofstream paramFile("paramFile.dat", std::ofstream::app);
-  
+
   std::vector<double>::const_iterator it, it2;
   int count = 1;
   double nu1Tot = 0.0;
@@ -1068,7 +1078,7 @@ void Evolution::avgLC(std::vector<double> *fNu1, std::vector<double> *fNu2)
   double avgNu2 = 0.0;
   double avgSPindex = 0.0;
   double logNuRatio = log10(extnu2/extnu1);
-  
+
   double param1 = extJetLum;
   double param2 = extJetOpenAngle;
   double param3 = extEjTimeGap;
@@ -1077,7 +1087,7 @@ void Evolution::avgLC(std::vector<double> *fNu1, std::vector<double> *fNu2)
   double param6 = extShThermalEne;
   double param7 = extShIntKine;
   double param8 = extShIntMag;
- 
+
   if(avgFile.is_open() && paramFile.is_open())
     {
       for (it = fNu1->begin(), it2 = fNu2->begin();
@@ -1087,30 +1097,30 @@ void Evolution::avgLC(std::vector<double> *fNu1, std::vector<double> *fNu2)
           nu1Tot += *it;
           nu2Tot += *it2;
         }
-    
+
       avgNu1 = nu1Tot/count;
       avgNu2 = nu2Tot/count;
-      
+
       avgSPindex = (log10(nu2Tot/nu1Tot))/logNuRatio;
-      
+
       avgFile<<avgNu1<<"\t"<<avgNu2<<"\t"
              <<avgSPindex<<std::endl;
-      
+
       paramFile<<param1<<"\t"<<param2<<"\t"<<param3<<"\t"
                <<param4<<"\t"<<param5<<"\t"<<param6<<"\t"
                <<param7<<"\t"<<param8<<std::endl;
-      
+
       count = 1;
-      
-      
+
+
     }
-  else 
+  else
     {
       std::cerr<<"Error! Unable to open file avgLC.dat"<<std::endl;
     }
- 
+
   avgFile.close();
-  
+
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 void Evolution::finalTStepTau(Container *activeSh, std::vector<double> *nu,
@@ -1124,12 +1134,12 @@ void Evolution::finalTStepTau(Container *activeSh, std::vector<double> *nu,
   double outerRadius;
   double bEneDens;
   double intEner;
-  
+
   std::ofstream finalTStauF("finalTStau.dat", std::ofstream::app);
-  
-  if (finalTStauF.is_open()) 
-    { 
-      
+
+  if (finalTStauF.is_open())
+    {
+
       for(Container::const_iterator sh = activeSh->begin();
           sh != activeSh->end(); ++sh)
         {
@@ -1141,16 +1151,16 @@ void Evolution::finalTStepTau(Container *activeSh, std::vector<double> *nu,
           shWidth = outerRadius - innerRadius;//(*sh)->getShellWidth();
           bEneDens = (*sh)->getBEneDens();
           intEner = (*sh)->getInternalEnergy();
-          
-          
+
+
           std::vector<double> tauNu = (*sh)->tauVals();
-          
+
           if(location >= 0.0 && location <= 1.e20)
             {
               finalTStauF<<std::setiosflags(std::ios::scientific)<<std::setprecision(8)<<location;
-              if(!shell) 
+              if(!shell)
                 {
-                  for(std::vector<double>::const_iterator it3= nu->begin(), it4 = tauNu.begin(); 
+                  for(std::vector<double>::const_iterator it3= nu->begin(), it4 = tauNu.begin();
                       it3 != nu->end();
                       ++it3, ++it4)
                     {
@@ -1169,15 +1179,15 @@ void Evolution::finalTStepTau(Container *activeSh, std::vector<double> *nu,
             }
         }
       finalTStauF<<"\n";
-      
+
     }
-  else 
+  else
     {
       std::cout<<"Error! Unable to open finalTStau file"<<std::endl;
         }
   finalTStauF.close();
-  
-  
+
+
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 void Evolution::finalTStep(Container *activeSh, std::vector<double> *nu,
@@ -1191,12 +1201,12 @@ void Evolution::finalTStep(Container *activeSh, std::vector<double> *nu,
   double outerRadius;
   double bEneDens;
   double intEner;
-  
+
   std::ofstream finalTSFile("finalTS.dat", std::ofstream::app);
-  
-  if (finalTSFile.is_open()) 
-    { 
-      
+
+  if (finalTSFile.is_open())
+    {
+
       for(Container::const_iterator sh = activeSh->begin();
           sh != activeSh->end(); ++sh)
         {
@@ -1208,16 +1218,16 @@ void Evolution::finalTStep(Container *activeSh, std::vector<double> *nu,
           shWidth = outerRadius - innerRadius;//(*sh)->getShellWidth();
           bEneDens = (*sh)->getBEneDens();
           intEner = (*sh)->getInternalEnergy();
-          
-          
+
+
           std::vector<double> iNu = (*sh)->iNuVals();
-            
+
           if(location >= 0.0 && location <= 1.e20)
             {
               finalTSFile<<std::setiosflags(std::ios::scientific)<<std::setprecision(8)<<location;
-              if(!shell) 
+              if(!shell)
                 {
-                  for(std::vector<double>::const_iterator it = iNu.begin(), 
+                  for(std::vector<double>::const_iterator it = iNu.begin(),
                         it3= nu->begin(); it != iNu.end(); ++it, ++it3)
                     {
                       finalTSFile<<"\t"<<*it/1.e-26;
@@ -1230,7 +1240,7 @@ void Evolution::finalTStep(Container *activeSh, std::vector<double> *nu,
                       it2 != nu->end(); ++it2)
                     {
                       finalTSFile<<"\t"<<0.0;
-                      
+
                     }
                   finalTSFile<<"\t"<<shWidth;
                 }
@@ -1239,12 +1249,12 @@ void Evolution::finalTStep(Container *activeSh, std::vector<double> *nu,
         }
       finalTSFile<<"\n";
     }
-  else 
+  else
     {
       std::cout<<"Error! Unable to open results file"<<std::endl;
         }
   finalTSFile.close();
-  
+
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 bool Evolution::fileExists(const std::string& fileName)
@@ -1261,7 +1271,7 @@ bool Evolution::fileExists(const std::string& fileName)
     fin.close();
     return false;
     }
-  
+
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 //this writes a file that contains every time step with
@@ -1272,30 +1282,30 @@ void Evolution::tauWrite(Container *activeSh, std::vector<double> *nu)
   bool shell;
   double location;
   double ti;
-    
+
   std::ofstream tauFile("tauResFile.dat", std::ofstream::app);
-  
-  if (tauFile.is_open()) 
-    { 
-      
+
+  if (tauFile.is_open())
+    {
+
       for(Container::const_iterator sh = activeSh->begin();
           sh != activeSh->end(); ++sh)
         {
           shell = (*sh)->getShellId();
           location = (*sh)->getLocation();
           ti = (*sh)->getTimeOfInjection();
-           
+
           std::vector<double> tauNu = (*sh)->tauVals();
-          
+
           if(location >= 0.0 && location <= 1.e20)
             {
               tauFile<<std::setiosflags(std::ios::scientific)
                      <<std::setprecision(8)
                      <<location;
-              if(!shell) 
+              if(!shell)
                 {
-                  for(std::vector<double>::const_iterator it3= nu->begin(), 
-                        it4 = tauNu.begin(); 
+                  for(std::vector<double>::const_iterator it3= nu->begin(),
+                        it4 = tauNu.begin();
                       it3 != nu->end();
                       ++it3, ++it4)
                     {
@@ -1314,9 +1324,9 @@ void Evolution::tauWrite(Container *activeSh, std::vector<double> *nu)
             }
         }
       tauFile<<"\n";
-      
+
     }
-  else 
+  else
     {
       std::cout<<"Error! Unable to open tauRes file"<<std::endl;
         }
@@ -1324,7 +1334,7 @@ void Evolution::tauWrite(Container *activeSh, std::vector<double> *nu)
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 void Evolution::splitLightcurve(Container *activeSh, double &tNow)
-{ 
+{
   std::string one="1", two="2", three="3", four="4", five="5", six="6";
   std::string lcFilename = extLCFile;
   std::string lcFilename1(lcFilename);
@@ -1349,7 +1359,7 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
   std::ofstream timeFile4(lcFilename4.c_str(), std::ofstream::app);
   std::ofstream timeFile5(lcFilename5.c_str(), std::ofstream::app);
   std::ofstream timeFile6(lcFilename6.c_str(), std::ofstream::app);
-  
+
   std::vector<double> nuVals(nu->size(), 0.0);
   std::vector<double> nuVals1(nu->size(), 0.0);
   std::vector<double> nuVals2(nu->size(), 0.0);
@@ -1357,15 +1367,15 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
   std::vector<double> nuVals4(nu->size(), 0.0);
   std::vector<double> nuVals5(nu->size(), 0.0);
   std::vector<double> nuVals6(nu->size(), 0.0);
-  
+
   std::vector<double>::iterator nuIt, nuIt1, nuIt2, nuIt3, nuIt4, nuIt5, nuIt6;
-  std::vector<double>::const_iterator nuValIt, nuItConst, nuItConst1, 
+  std::vector<double>::const_iterator nuValIt, nuItConst, nuItConst1,
     nuItConst2, nuItConst3, nuItConst4, nuItConst5, nuItConst6;
   double up1=extUp1, up2=extUp2, up3=extUp3, up4=extUp4, up5=extUp5;
-  
+
   double location;
   bool shell;
-    
+
   if(timeFile.is_open())
     {
       timeFile<<std::setiosflags(std::ios::scientific)<<std::setprecision(8)<<tNow;
@@ -1375,15 +1385,15 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
       timeFile4<<std::setiosflags(std::ios::scientific)<<std::setprecision(8)<<tNow;
       timeFile5<<std::setiosflags(std::ios::scientific)<<std::setprecision(8)<<tNow;
       timeFile6<<std::setiosflags(std::ios::scientific)<<std::setprecision(8)<<tNow;
-     
+
       for(Container::const_iterator sh = activeSh->begin();
           sh != activeSh->end(); ++sh)
         {
           location = (*sh)->getLocation();
           shell = (*sh)->getShellId();
           std::vector<double> iNu = (*sh)->iNuVals();
-                             
-          if(!shell) 
+
+          if(!shell)
             {//total lightcurve
               for(nuValIt = iNu.begin(), nuIt = nuVals.begin();
                   nuValIt != iNu.end(); ++nuIt, ++nuValIt)
@@ -1392,7 +1402,7 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
                 }
               //lightcurve1
               if(location <= up1)
-                {                  
+                {
                   for(nuValIt = iNu.begin(), nuIt1 = nuVals1.begin();
                       nuValIt != iNu.end(); ++nuIt1, ++nuValIt)
                     {
@@ -1441,12 +1451,12 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
                  }
             }
         }
-      
-      for(nuItConst = nuVals.begin(), nuItConst1 = nuVals1.begin(), 
-            nuItConst2 = nuVals2.begin(), nuItConst3 = nuVals3.begin(), 
+
+      for(nuItConst = nuVals.begin(), nuItConst1 = nuVals1.begin(),
+            nuItConst2 = nuVals2.begin(), nuItConst3 = nuVals3.begin(),
             nuItConst4 = nuVals4.begin(),
             nuItConst5 = nuVals5.begin(), nuItConst6 = nuVals6.begin();
-          nuItConst != nuVals.end(); ++nuItConst, ++nuItConst1, ++nuItConst2, 
+          nuItConst != nuVals.end(); ++nuItConst, ++nuItConst1, ++nuItConst2,
             ++nuItConst3, ++nuItConst4, ++nuItConst5, ++nuItConst6)
         {
           timeFile<<"\t"<<*nuItConst;
@@ -1455,9 +1465,9 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
           timeFile3<<"\t"<<*nuItConst3;
           timeFile4<<"\t"<<*nuItConst4;
           timeFile5<<"\t"<<*nuItConst5;
-          timeFile6<<"\t"<<*nuItConst6;                               
+          timeFile6<<"\t"<<*nuItConst6;
         }
- 
+
       timeFile<<"\n";
       timeFile1<<"\n";
       timeFile2<<"\n";
@@ -1471,7 +1481,7 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
       nuVals3.clear();
       nuVals4.clear();
       nuVals5.clear();
-      nuVals6.clear();      
+      nuVals6.clear();
     }
   else
     {
@@ -1484,7 +1494,65 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
   timeFile4.close();
   timeFile5.close();
   timeFile6.close();
- 
+
 }
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
+void Evolution::compTable(std::vector<double> *nu, std::vector<double> *g)
+{
+  std::vector<double>::iterator nuIter_1, nuIter_0, gIter;
+
+  try
+    {
+      // Create the xF_c(x) array as size_nu*size_nu*size_gamma
+      comptonVect = new std::vector<double>((*nu).size()*(*nu).size()*(*g).size(),
+				       0.0);
+      for(gIter = g->begin(); gIter != g->end(); ++gIter)
+	{
+	  for(nuIter_1 = nu->begin(); nuIter_1 != nu->end(); ++nuIter_1)
+	    {
+	      for(nuIter_0 = nu->begin(); nuIter_0 != nu->end(); ++nuIter_0)
+		{
+
+
+
+		}
+	    }
+	}
+
+    }
+  catch(std::bad_alloc)
+    {
+      std::cerr<<"Memory error in compTable while creating the table";
+    }
+}
+//.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
+void Evolution::gammaRange(std::vector<double> *egamma)
+{
+  //egamma = new std::vector<double>;
+  double min = exteGammaMin;
+  double max = exteGammaMax;
+
+  int gammaPoints = extgammaPoints;
+
+  double abscissa = min;
+  double r = pow(max / min, 1.0 / gammaPoints);
+  double r2 = sqrt(r);
+  r -= 1.0;
+
+  //writing the frequency range file
+  //useful when sampling many frequencies
+
+  std::ofstream gammaFile("gammaRange.dat");
+  std::cout<<"Log binning for electrons(Lorentz factor)"
+	   <<std::endl;
+  for (int i = 1; i <= gammaPoints; ++i)
+    {
+      egamma->push_back(r2 * abscissa); // Calc log-space mid-point for grid
+      abscissa += (r * abscissa);  // Add grid width to abscissa to find
+      //std::cout<<r2<<"\t"<<(abscissa)<<std::endl;
+      gammaFile<<r2 * abscissa<<std::endl;
+
+    }
+
+}

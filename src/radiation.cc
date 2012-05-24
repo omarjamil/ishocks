@@ -26,12 +26,13 @@ Radiation::Radiation()
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 Radiation::~Radiation()
 {}
+
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 
 void Radiation::synchSpectrum(std::vector<double> *nu, Container *actSh)
 {
 
-  std::vector<double>::const_iterator nuIter;
+  std::vector<double>::const_iterator nuIter, nuIter2, gIter, eDistIter;
   double Jnu, Inu, shGamma, shTau;
   double absor, emiss;
   double intEn, kap;
@@ -48,6 +49,7 @@ void Radiation::synchSpectrum(std::vector<double> *nu, Container *actSh)
   double distance = extSourceDistance;
   double expAbs;
   double shellLum0=0.0, totalInt=0.0, jetLum=0.0, Inu2=0.0;
+  std::vector<double> *gamma, *eDist;
   
       
   for (Container::const_iterator sIt = actSh->begin();
@@ -245,6 +247,5 @@ double Radiation::synchrotronAbsor(double &intEne, double &nu,
   return ChiNu;
   
 }
+
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-
-
