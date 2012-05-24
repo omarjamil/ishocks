@@ -1,0 +1,14 @@
+obsfl,bgdfl,bklev,bsize,bfac,minb,tlim,minp,limquery,minflux,maxflux,psfl
+
+obsfl = input lightcurve
+bgdl = background lightcurve (can be none)
+bklev = if bgdl is none then this can be set.. can be zero
+bsize = bin time
+bfac = bin factor
+minb = minimum number of bins
+tlim = maximum gap size
+minp = minimum number of points
+limquery = impose a flux limit on any parts of the lightcurve
+minflux = if limquery 'y', the lower flux limit
+maxflux = if limquery 'y', the upper flux limit
+psfl = file to write the psd to

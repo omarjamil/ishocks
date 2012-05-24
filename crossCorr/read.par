@@ -1,0 +1,6 @@
+First_lc: g.dat 
+Second_lc: g.dat
+Outfile: autog.dat
+Tau_min: 20.0
+Delta_tau: 0.1
+

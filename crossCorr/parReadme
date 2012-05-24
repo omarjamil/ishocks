@@ -1,0 +1,7 @@
+lc_1_29_err.dat
+0.005 0.009999
+irlc.dat
+
+File to rebin
+oldbin, newbin
+File to write

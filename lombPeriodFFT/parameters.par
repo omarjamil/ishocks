@@ -1,0 +1,5 @@
+input_file = irlc1.dat
+output_file = iScargle1.dat
+analysis_choice = 1
+oversampling_factor = 3.0
+frequency_factor = 1.

@@ -1,0 +1,6 @@
+Binning(1:Log 2:Geo)=1
+Input_file=irScargle.dat
+Output_file=out.dat
+Num_of_bins = 20
+x_low=0.001
+x_up=5.0
