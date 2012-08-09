@@ -72,20 +72,18 @@ void Container::populateWithShells(int &tw, double &lum)
   //injection time of the shell
   double ti=0.0;
     
-  //generate pseudo random between 0 and p.
-  double p = 1; 
   //Gaussian mean; should ==tv
   double mu = tv; 
   //need to be careful with sd, can get -ve values otherwise
   //this needs to be small so that last shell injection time
   //is ~tw
-  double sd = 0.001, sdGam = .001; //standard deviation
+  double sd = 0.001; //standard deviation
   
   Numerical nums;
   int idum= (-1*time(NULL));
    
     
-  double random1 = 0.0, random2 = 0.0, random3 = 0.0, random4 = 0.0;
+  double random1 = 0.0, random2 = 0.0, random3 = 0.0;
   double dt = 0.0; //injection interval
   double m = 0.0;
   //subtracting 1. for the puposes of generating a random 
@@ -94,13 +92,11 @@ void Container::populateWithShells(int &tw, double &lum)
   //random number between 0 and 0.9 and then add one to it).
   double gMin = extGamMin;
   double g_max = (extGamMax - gMin);
-  double gMu = extGamMax;
     
   double gam = 0.0;
-  double inEne = 0.0;
   //double shWidth = extShWidth; //Shell width
   double shWidth = 0.0;
-  double minTGap = 0.0, gap=extShWidth;
+  double gap=extShWidth;
   double beta=0.0;
   
   if(gap >= 1.0)
@@ -113,13 +109,7 @@ void Container::populateWithShells(int &tw, double &lum)
           
         }
   
-  bool useShFile = extUseShellFile;
-  bool useDataFile = extUseDataFile;
-  bool incTimeRes = extIncreaseTimeStep;
-  bool injWithIntEnergy = extInjIntEne;
-  double relMassFrac = extRelMassFrac;
   std::vector<double>::iterator injTime, ma, ga, le;
-  double itime, maSh, gaSh, leSh;
   std::string place1("populateWithShells; useShellFile; Container.cc");
     
   
@@ -310,9 +300,7 @@ void Container::majorEjection(double &tiM, double &tNow)
       double shWidthM = 1.e10;
       double mM = (lum * (tiM-tNow)) / (gamM * sqr(physcon.c));
       double inEneM = 0.9 * gamM * mM * (physcon.c * physcon.c);
-      double innerRadius = 1.;
-      double outerRadius = innerRadius + shWidthM;
-      
+              
       this->push_back(new Shells(tiM, mM, gamM, inEneM, shWidthM));
       lastShell = this->back();
       lastShell->setIdFalse();

@@ -1,76 +1,50 @@
-##########################################################
-# Makefile
-#
-SOURCES.cc = numerical.cc parameters.cc paraccess.cc shells.cc radiation.cc container.cc mergers.cc evolution.cc simulation.cc run.cc
-INCLUDES = 
-CPP = g++
-CFLAGS = 
-CPPFLAGS = -O3 -W
-LIBS = 
-
+CC = gcc
+# Compiler flags
+CFLAGS = # -c -O3 -Wall -g
+# C++ compiler flags
+CPPFLAGS = -c -O3 -std=c++0x -Wall -g
+# Header files
+INCLUDE = -I../include/
+# Linker flags
+LDFLAGS = -g -Wall
+# Linker libraries
+LDLIBS = -lstdc++ -lm
+# Sources
+SRCS = $(wildcard *.cc)
+# Headers
+HDRS = $(wildcard ../include/*.hh)
 # the executable file
 EFILE= ../ishocks
+
 # Object file
-OBJECTS= $(SOURCES.cc:.cc=.o)
-
-all: $(EFILE)
-
+OBJECTS= $(SRCS:.cc=.o)
 
 # linking to create the executable file
+# $@ is the name of the target
 $(EFILE): $(OBJECTS)
 	@echo "linking...." 
-	$(CPP) $(CPPFLAGS) -o $(EFILE) $(OBJECTS) $(LIBS)
+	$(CC) $(OBJECTS) $(LDLIBS) $(LDFLAGS) -o $@ 
 
+# $< list first dependency, therefore the name of the file from include depends
+# percent sign does text substituion so can be used to write generic makefiles
+%.o: %.cc
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(INCLUDE) -c $<
 
-# this declares dependence for object files
-# so only the necessary ones
-# if the dependence files changed, the .o file
-# will be recompiled
-
-numerical.o: numerical.hh numerical.cc
-	$(CPP) $(CPPFLAGS) -c numerical.cc
-
-parameters.o: parameters.hh parameters.cc 
-	$(CPP) $(CPPFLAGS) -c parameters.cc 
-
-paraccess.o: paraccess.cc paraccess.hh
-	$(CPP) $(CPPFLAGS) -c paraccess.cc
-
-shells.o: shells.hh shells.cc paraccess.hh
-	$(CPP) $(CPPFLAGS) -c shells.cc
-
-radiation.o: radiation.hh radiation.cc paraccess.hh shells.hh shells.cc container.hh container.cc 
-	$(CPP) $(CPPFLAGS) -c radiation.cc
-
-container.o: container.hh container.cc shells.hh shells.cc paraccess.hh numerical.hh
-	$(CPP) $(CPPFLAGS) -c container.cc
-
-mergers.o: mergers.hh mergers.cc shells.hh container.hh container.cc funcobj.hh paraccess.hh
-	$(CPP) $(CPPFLAGS) -c mergers.cc
-
-evolution.o: evolution.hh evolution.cc mergers.cc funcobj.hh simulation.cc paraccess.hh
-	$(CPP) $(CPPFLAGS) -c evolution.cc
-
-simulation.o: simulation.hh simulation.cc funcobj.hh shells.hh paraccess.hh
-	$(CPP) $(CPPFLAGS) -c simulation.cc
-
-run.o: run.cc simulation.hh simulation.cc 
-	$(CPP) $(CPPFLAGS) -c run.cc
-
-##########################################################
-# run "make debug"
-# "./debug" will produce "gmon.out"
-# "gprof debug" can be used to analyze the output
-debug:
-	g++ -pg $(OBJECTS) $(LIBS) -o ../$@
-
-
-# remove the object and executable files
 clean:
 	rm -f $(EFILE) $(OBJECTS)
 
 spotless:
 	rm -f $(EFILE) $(OBJECTS) *~
 
-#
-##########################################################
+# this generates the dependencies list stored in depend file
+# depend is regenerated everytime SRC or HDRS change
+depend: $(SRCS) $(HDRS)
+	$(CC) -MM $(CPFLAGS) $(INCLUDE) $(SRCS) > depend
+
+#depend: 
+#	$(CC) -MM $(CPFLAGS) $(INCLUDE) $(SRCS) > depend
+
+
+
+# include the dependencies file
+include depend

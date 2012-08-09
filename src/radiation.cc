@@ -33,10 +33,10 @@ void Radiation::synchSpectrum(std::vector<double> *nu, Container *actSh)
 {
 
   std::vector<double>::const_iterator nuIter, nuIter2, gIter, eDistIter;
-  double Jnu, Inu, shGamma, shTau;
+  double Inu, shGamma, shTau;
   double absor, emiss;
   double intEn, kap;
-  double shVol, shArea, shWidth, shOuterRad;
+  double shArea, shWidth, shOuterRad;
   bool shell;
   double shTi;
   double shDoppler;
@@ -49,7 +49,7 @@ void Radiation::synchSpectrum(std::vector<double> *nu, Container *actSh)
   double distance = extSourceDistance;
   double expAbs;
   double shellLum0=0.0, totalInt=0.0, jetLum=0.0, Inu2=0.0;
-  std::vector<double> *gamma, *eDist;
+  //std::vector<double> *gamma, *eDist;
   
       
   for (Container::const_iterator sIt = actSh->begin();
@@ -59,7 +59,6 @@ void Radiation::synchSpectrum(std::vector<double> *nu, Container *actSh)
       shGamma = (*sIt)->getShellGamma();
       intEn = (*sIt)->getInternalEnergy();
       kap = (*sIt)->getPLawNorm();
-      shVol = (*sIt)->getShellVolume();
       shArea = (*sIt)->getShellArea();
       shWidth = (*sIt)->getShellWidth();
       shOuterRad = (*sIt)->getShellOuRad();

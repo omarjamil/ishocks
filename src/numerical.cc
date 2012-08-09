@@ -73,7 +73,7 @@ double Numerical::trapz(pfn func, const double a,
                         const double b, const int n)
 {
   double x, tnm, sum, del;
-  double s;
+  double s=0.0;
   int it, j;
   
   if(n==1){
@@ -99,7 +99,7 @@ double Numerical::midinf(pfn funk, const double aa,
 {
 
   double x, tnm, sum, del, ddel, b, a;
-  double s;
+  double s=0.0;
   int it, j;
   
   b=1./aa;
@@ -139,7 +139,7 @@ double Numerical::midexp(pfn funk, const double aa,
 {
 
   double x, tnm, sum, del, ddel, b, a;
-  double s;
+  double s=0.0;
   int it, j;
   
   b=exp(-aa);

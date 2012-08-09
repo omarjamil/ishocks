@@ -68,8 +68,6 @@ void Mergers::doMerger(Container *active, double &tNow)
       
      //  (*inner)->setDimensions(tNow);
 //       (*outer)->setDimensions(tNow);
-      bool insh = (*inner)->getShellId();
-      bool oush = (*outer)->getShellId();
       
       double innIntEne = (*inner)->getInternalEnergy();
       double outIntEne = (*outer)->getInternalEnergy();
@@ -83,9 +81,7 @@ void Mergers::doMerger(Container *active, double &tNow)
       int outMergCount = (*outer)->getMergeCount();
       int totMergCount = innMergCount + outMergCount;
       double innOuterRadius = (*inner)->getOuterRadius();
-      double innInnerRadius = (*inner)->getInnerRadius();
       double outInnerRadius = (*outer)->getInnerRadius();
-      double outOuterRadius = (*outer)->getOuterRadius();
       double innMu = (innMass + innIntEne/sqr(physcon.c));
       double outMu = (outMass + outIntEne/sqr(physcon.c));
       
@@ -131,8 +127,6 @@ void Mergers::doMerger(Container *active, double &tNow)
       
       // double mergedBeta = sqrt(1. - (1. / sqr(mergedGamma)));
       
-      double c = physcon.c;
-      double c2 = sqr(physcon.c);
       double beta_m2 = sqr(((innGamma*innMass*innBeta) + (outGamma*outMass*outBeta)) / 
                         ((innGamma*innMass + outGamma*outMass)));
       double mergedBeta = sqrt(beta_m2);

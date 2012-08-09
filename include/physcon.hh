@@ -30,10 +30,10 @@ public:
                         mu_0(12.56637061e-7 /*N A^-2*/)
   { }
   double mc2() const { return m_e * c * c; }
+  const double pi;
   const double c;
   const double e;
   const double m_e;
-  const double pi;
   const double sigma_t;
   const double h;
   const double alpha_f;

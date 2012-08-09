@@ -56,7 +56,7 @@ public:
   void setExpansionBeta();
 
   //powerlaw Normalization calculated with Eint in units of GeV (Longair)
-  double powerlawNorm();
+  void powerlawNorm();
 
   //electron gamma range
   void gammaRange();
@@ -72,10 +72,10 @@ public:
   void adiabaticLosses(double &);
 
   //setting the Magentic energy density
-  double initialBEnergyDensity();
+  void initialBEnergyDensity();
 
   //setting magnetic field parameters after adiabatic losses
-  double setMagParams(double &);
+  void setMagParams(double &);
 
   //if the shells were expanding into vacuum i.e. no work done.
   void inVacuumExpansion();
@@ -134,7 +134,7 @@ public:
     return area;
   }
 
-  inline double setShellArea(double &A)
+  inline void setShellArea(double &A)
   {
     area = A;
   }
@@ -151,7 +151,7 @@ public:
     return x_u;
   }
 
-  inline double setOuterRadius(double &ouRad)
+  inline void setOuterRadius(double &ouRad)
   {
     x_u = ouRad;
   }
@@ -162,7 +162,7 @@ public:
     return x_l;
   }
 
-  inline double setInnerRadius(double &innRad)
+  inline void setInnerRadius(double &innRad)
   {
     x_l = innRad;
   }
@@ -359,7 +359,7 @@ public:
 
   }
 
-  inline double setMagneticPressure(double &magEneDens)
+  inline void setMagneticPressure(double &magEneDens)
   {
     magPressure = 1./3. * magEneDens;
   }

@@ -81,7 +81,6 @@ void Shells::shellInitialization()
 {
   double wid = width;
   double theta = (extJetOpenAngle/180.0)*physcon.pi; //jet opening angle
-  double xL, xU, rL, rU;
 
   x_l = 1.0;
   //x_u = 0.5*(wid);
@@ -191,7 +190,6 @@ void Shells::setExpansionBeta()
 {
   //Spada et al '01 equations 7 and 8
   //fraction of internal energy given to thermal energy
-  double shellVolume = getShellVolume();
   double shellMass = getShellMass();
   double shellGamma = getShellGamma();
   //double iEnergy = getInternalEnergy() / shellGamma;
@@ -210,13 +208,12 @@ void Shells::setExpansionBeta()
 }
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-double Shells::powerlawNorm()
+void Shells::powerlawNorm()
 {
   double shellVolume = vol;//this->getShellVolume();
-  double kappa = 0.0, kappa2=0.0;
+  double /*kappa = 0.0,*/ kappa2=0.0;
   double plindex = extPowLawInd;
   //N(E) in GeV for calculating radiation - Longair
-  double shGamma = getShellGamma();
   double iEnergy = getInternalEnergy();
   //6.241590974e18 eV = 1J
   //the following in units of GeV; divided by 511e-6 eV as
@@ -230,30 +227,38 @@ double Shells::powerlawNorm()
 
   if(EintK == 0.0)
     {
-      kappa = 0.0;
+      //kappa = 0.0;
+      kappa2 = 0.0;
     }
   else if(gammaMax == 1.)
     {
-      kappa = 0.0;
+      //kappa = 0.0;
+      kappa2 = 0.0;
     }
   else
     {
 
       if(plindex == 2.0)
         {
-          kappa =
+	  //  kappa = pow(511e-6, (plindex-1.)) *
+          //  EintK/((log(gammaMax) - log(gammaMin)) + ((1./(gammaMax))
+          //                                            - (1./(gammaMin))));
+
+	  kappa2 = pow(physcon.mc2(), (plindex-1.)) *
             EintK/((log(gammaMax) - log(gammaMin)) + ((1./(gammaMax))
                                                       - (1./(gammaMin))));
+
+	  
 
         }
       else
         {
 
-          kappa = pow(511e-6, (plindex-1.)) *
-            EintK/(((1./(2.-plindex))*(pow(gammaMax,(2.-plindex)) -
-                                       pow(gammaMin,(2.-plindex)))) -
-                   ((1./(1.-plindex))*(pow(gammaMax,(1.-plindex)) -
-                                       pow(gammaMin,(1.-plindex)))));
+	  // kappa = pow(511e-6, (plindex-1.)) *
+          //  EintK/(((1./(2.-plindex))*(pow(gammaMax,(2.-plindex)) -
+          //                             pow(gammaMin,(2.-plindex)))) -
+          //         ((1./(1.-plindex))*(pow(gammaMax,(1.-plindex)) -
+          //                             pow(gammaMin,(1.-plindex)))));
 
           //use with SI units calc. of synchrotron
           kappa2 = pow(physcon.mc2(), (plindex-1.)) *
@@ -288,7 +293,7 @@ void Shells::adiabaticLosses(double &tNow)
       double shVolumeNow, shWidth, shbeta, xLower, xUpper, rLower,
         rUpper, shTheta, pNormAfter, gammaMaxBefore, gammaMaxAfter,
         magPressureAfter, magPressureBefore, intEneBefore, intEneAfter,
-        thermalEneBefore, thermalEneAfter;
+        /*thermalEneBefore,*/ thermalEneAfter;
 
       double betaExp = this->getExpansionBeta();
       double shellGamma = this->getShellGamma();
@@ -340,7 +345,7 @@ void Shells::adiabaticLosses(double &tNow)
 
       setGammaMax(gammaMaxAfter);
 
-      thermalEneBefore = getThermalEnergy();
+      //thermalEneBefore = getThermalEnergy();
       intEneAfter = intEneBefore * pow((shVolumeNow/shVolume), temp2);
       this->setInternalEnergy(intEneAfter);
       //thermalEneAfter = thermalEneBefore * pow((shVolumeNow/shVolume), temp2);
@@ -388,13 +393,12 @@ double Shells::dopplerFactor()
 
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-double Shells::initialBEnergyDensity()
+void Shells::initialBEnergyDensity()
 {
   //calculated in the shell rest frame.
 
   double shellVolume = getShellVolume();
   double intEne = getInternalEnergy();
-  double shellGamma = getShellGamma();
 
   BEDens =  sqrt(2.*(((intEne*extShIntMag)/shellVolume)*physcon.mu_0));
   magPressure = BEDens;
@@ -403,7 +407,7 @@ double Shells::initialBEnergyDensity()
 //   setInternalEnergy(newIntEn);
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-double Shells::setMagParams(double &newMagPressure)
+void Shells::setMagParams(double &newMagPressure)
 {
   if(newMagPressure <= 0.0)
     {
@@ -483,7 +487,6 @@ void Shells::slowEnergization(double &tNow)
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 void Shells::shockZone(double &tNow)
 {
-  double intE = this->getInternalEnergy();
   double shellLoc = this->getLocation();
   double injT = this->getTimeOfInjection();
   double relMassFrac = extRelMassFrac;
@@ -538,7 +541,7 @@ void Shells::radiativeLosses(double &tNow)
 
   if(!shell)
     {
-      double gammaMaxBefore = this->getGammaMax();
+      //double gammaMaxBefore = this->getGammaMax();
       double magP = this->getMagPressure();
       double intEneBefore = this->getInternalEnergy();
 

@@ -70,12 +70,9 @@ void Evolution::evolve(int &duration)
       Container::const_iterator all, next;
       Container::iterator locator, active, inLocate, ouLocate;
 
-      double col_t;
-      double dt_collision, dt_next, t_now, t_prev;
-      double t_inner = 0.0, t_outer = 0.0;
+      double dt_collision, dt_next, t_now;
       double t_last;
       double t_next;
-      double t_incr;
       const std::string exitFile = "exitNow";
       bool exitF;
       bool readPrev = extLoadPrevSim;
@@ -150,7 +147,7 @@ void Evolution::evolve(int &duration)
       t_next = *shellITNext;
 
       int tCount = 1;
-      int tCount2 = 1;
+      //int tCount2 = 1;
       int mCount = 0;
 
       std::cout<<"Running the simulation, jet on (shells + mergers)..."<<std::endl;
@@ -337,7 +334,7 @@ void Evolution::evolveIncrSampling(int &duration)
       bool readPrev = extLoadPrevSim;
       bool dumpAtEnd = extDumpActive;
 
-      double col_t, dt_collision, dt_next, t_now = 0.0;
+      double dt_collision, dt_next, t_now = 0.0;
       double t_last, t_next, dtIncr;
       double t_max = extTotalDuration;
       double t_incr = extStepResolution;
@@ -611,10 +608,8 @@ double Evolution::minCollisionTime(Container *shells,
       std::vector<double>::iterator t;
       Container::iterator inner, outer;
 
-      double collTime, minTime;
-      int itposition;
-      double shI, shO, collTPrev=1.e8;
-
+      double collTime, minTime, shI, shO, collTPrev=1.e8;
+      
       outer = shells->begin();
       inner = shells->begin();
       ++inner;
@@ -655,30 +650,31 @@ double Evolution::minCollisionTime(Container *shells,
           return minTime = 1.e12;
 
         }
-
+      
+      
     }
   catch(std::bad_alloc)
     {
       std::cerr<<"Memory exhauseted in minCollisionTime;Evolution.cc\n";
+      return -1;
     }
 
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 double Evolution::collisionTime(Shells *inner, Shells *outer)
 {
-  double t_now = inner->getTimeOfInjection();
   double r_inner = inner->getOuterRadius();
   double r_outer = outer->getInnerRadius();
 
   //double r_inner = inner->getLocation();
   //double r_outer = outer->getLocation();
 
-  double w_outer = outer->getShellWidth();
-  double w_inner = inner->getShellWidth();
+  //double w_outer = outer->getShellWidth();
+  //double w_inner = inner->getShellWidth();
   double b_outer = outer->getShellBeta();
   double b_inner = inner->getShellBeta();
-  double t_inj_inner = inner->getTimeOfInjection();
-  double t_inj_outer = outer->getTimeOfInjection();
+  //double t_inj_inner = inner->getTimeOfInjection();
+  //double t_inj_outer = outer->getTimeOfInjection();
   double inner_beta_exp = inner->getExpansionBeta();
   double outer_beta_exp = outer->getExpansionBeta();
 
@@ -743,11 +739,9 @@ void Evolution::results(Container *activeSh, std::vector<double> *nu,
 {
   bool shell;
   double location;
-  double ti;
   double shWidth;
   double innerRadius;
   double outerRadius;
-  double bEneDens;
   double intEner;
   double shGamma;
   double shMass;
@@ -830,11 +824,9 @@ if(useResFile)
                   {
                     shell = (*sh)->getShellId();
                     location = (*sh)->getLocation();
-                    ti = (*sh)->getTimeOfInjection();
-                    innerRadius = (*sh)->getInnerRadius();
+		    innerRadius = (*sh)->getInnerRadius();
                     outerRadius = (*sh)->getOuterRadius();
                     shWidth = outerRadius - innerRadius;//(*sh)->getShellWidth();
-                    bEneDens = (*sh)->getBEneDens();
                     intEner = (*sh)->getInternalEnergy();
                     shGamma = (*sh)->getShellGamma();
                     shMass = (*sh)->getShellMass();
@@ -903,14 +895,11 @@ void Evolution::results(Container *activeSh, std::vector<double> *nu,
 {
   bool shell;
   double location;
-  double ti;
   double lcIR=0.0; //lightcurve
   double lcRa=0.0;
   double shWidth;
   double innerRadius;
   double outerRadius;
-  double bEneDens;
-  double intEner;
   double specIndex;
   double logFluxRatio;
   double logNuRatio = log10(extnu2/extnu1);
@@ -975,13 +964,9 @@ if(useResFile)
           {
             shell = (*sh)->getShellId();
             location = (*sh)->getLocation();
-            ti = (*sh)->getTimeOfInjection();
-            innerRadius = (*sh)->getInnerRadius();
+	    innerRadius = (*sh)->getInnerRadius();
             outerRadius = (*sh)->getOuterRadius();
             shWidth = outerRadius - innerRadius;//(*sh)->getShellWidth();
-            bEneDens = (*sh)->getBEneDens();
-            intEner = (*sh)->getInternalEnergy();
-
 
             std::vector<double> iNu = (*sh)->iNuVals();
 
@@ -1128,13 +1113,7 @@ void Evolution::finalTStepTau(Container *activeSh, std::vector<double> *nu,
 {
   bool shell;
   double location;
-  double ti;
-  double shWidth;
-  double innerRadius;
-  double outerRadius;
-  double bEneDens;
-  double intEner;
-
+  
   std::ofstream finalTStauF("finalTStau.dat", std::ofstream::app);
 
   if (finalTStauF.is_open())
@@ -1145,13 +1124,6 @@ void Evolution::finalTStepTau(Container *activeSh, std::vector<double> *nu,
         {
           shell = (*sh)->getShellId();
           location = (*sh)->getLocation();
-          ti = (*sh)->getTimeOfInjection();
-          innerRadius = (*sh)->getInnerRadius();
-          outerRadius = (*sh)->getOuterRadius();
-          shWidth = outerRadius - innerRadius;//(*sh)->getShellWidth();
-          bEneDens = (*sh)->getBEneDens();
-          intEner = (*sh)->getInternalEnergy();
-
 
           std::vector<double> tauNu = (*sh)->tauVals();
 
@@ -1195,13 +1167,10 @@ void Evolution::finalTStep(Container *activeSh, std::vector<double> *nu,
 {
   bool shell;
   double location;
-  double ti;
   double shWidth;
   double innerRadius;
   double outerRadius;
-  double bEneDens;
-  double intEner;
-
+  
   std::ofstream finalTSFile("finalTS.dat", std::ofstream::app);
 
   if (finalTSFile.is_open())
@@ -1212,14 +1181,10 @@ void Evolution::finalTStep(Container *activeSh, std::vector<double> *nu,
         {
           shell = (*sh)->getShellId();
           location = (*sh)->getLocation();
-          ti = (*sh)->getTimeOfInjection();
-          innerRadius = (*sh)->getInnerRadius();
+	  innerRadius = (*sh)->getInnerRadius();
           outerRadius = (*sh)->getOuterRadius();
           shWidth = outerRadius - innerRadius;//(*sh)->getShellWidth();
-          bEneDens = (*sh)->getBEneDens();
-          intEner = (*sh)->getInternalEnergy();
-
-
+          
           std::vector<double> iNu = (*sh)->iNuVals();
 
           if(location >= 0.0 && location <= 1.e20)
@@ -1281,8 +1246,7 @@ void Evolution::tauWrite(Container *activeSh, std::vector<double> *nu)
 {
   bool shell;
   double location;
-  double ti;
-
+  
   std::ofstream tauFile("tauResFile.dat", std::ofstream::app);
 
   if (tauFile.is_open())
@@ -1293,8 +1257,7 @@ void Evolution::tauWrite(Container *activeSh, std::vector<double> *nu)
         {
           shell = (*sh)->getShellId();
           location = (*sh)->getLocation();
-          ti = (*sh)->getTimeOfInjection();
-
+          
           std::vector<double> tauNu = (*sh)->tauVals();
 
           if(location >= 0.0 && location <= 1.e20)
