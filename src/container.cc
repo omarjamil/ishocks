@@ -183,16 +183,16 @@ void Container::updateShellParams(double &t)
     {
       
       //(*sh)->radiativeLosses(t);
-    
-      
+         
       if(!inVacuum)
-        {      
-          (*sh)->adiabaticLosses(t);
-        }
+        { 
+	  (*sh)->adiabaticLosses(t);
+	}
+      
       (*sh)->setDimensions(t);
       
       (*sh)->setExpansionBeta();
-      
+   
       if(slowEnergization)
         {
           (*sh)->slowEnergization(t);

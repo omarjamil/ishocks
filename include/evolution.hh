@@ -61,9 +61,7 @@ public:
   //function to populate the frequencies container
   //logarithmic ranging
   void freqRange(std::vector<double> *);
-  //electron gamma range
-  void gammaRange(std::vector<double> *);
-
+ 
   void avgLC(std::vector<double> *, std::vector<double> *);
 
   void finalTStep(Container *, std::vector<double> *,
@@ -90,10 +88,7 @@ private:
   //std::vector<double> *fluxNu1Cont;
   //std::vector<double> *fluxNu2Cont;
   bool fileExists(const std::string& );
-  std::vector<double> compVector;
-  void compTable(std::vector<double> *, std::vector<double> *);
-
-
+  
 
 };
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....

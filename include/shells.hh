@@ -58,9 +58,6 @@ public:
   //powerlaw Normalization calculated with Eint in units of GeV (Longair)
   void powerlawNorm();
 
-  //electron gamma range
-  void gammaRange();
-
   //electron powerlaw distribution
   void powerLaw();
 

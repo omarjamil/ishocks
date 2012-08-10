@@ -36,8 +36,7 @@ Shells::Shells(double &i, double &m, double &g, double &e, double &w)
       iNuGrid = new std::vector<double>;
       tau = new std::vector<double>;
       gammaGrid = new std::vector<double>;
-      gammaRange();
-
+     
     }
   catch(std::bad_alloc)
     {
@@ -271,9 +270,7 @@ void Shells::powerlawNorm()
     }
 
   pNorm = kappa2;
-  powerLaw();
-
-
+  
 }
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 void Shells::adiabaticLosses(double &tNow)
@@ -300,7 +297,8 @@ void Shells::adiabaticLosses(double &tNow)
 
       gammaMaxBefore = this->getGammaMax();
       intEneBefore = this->getInternalEnergy();
-
+      
+      
 
       shWidth = width + (betaExp * physcon.c * (tNow - tPrev));
       shbeta = sqrt(1. - (1./sqr(gamma)));
@@ -332,8 +330,7 @@ void Shells::adiabaticLosses(double &tNow)
       //the new powerlaw normalization
       pNormAfter = pNormBefore * pow((shVolumeNow/shVolume), temp);
       this->setPLawNorm(pNormAfter);
-      powerLaw();
-
+     
       double temp2 = -1./3.;
       //New gammaMax after adiabatic losses;
       gammaMaxAfter = gammaMaxBefore * pow((shVolumeNow/shVolume), temp2);
@@ -369,7 +366,6 @@ void Shells::adiabaticLosses(double &tNow)
   else
     {
       pNorm = 0.0;
-      powerLaw();
     }
 
 
@@ -564,61 +560,4 @@ void Shells::radiativeLosses(double &tNow)
 
     }
 }
-//.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-void Shells::gammaRange()
-{
-  egamma = new std::vector<double>;
-  double min = egammaMin;
-  double max = egammaMax;
-
-  int gammaPoints = extgammaPoints;
-
-  double abscissa = min;
-  double r = pow(max / min, 1.0 / gammaPoints);
-  double r2 = sqrt(r);
-  r -= 1.0;
-
-  //writing the frequency range file
-  //useful when sampling many frequencies
-
-  //std::ofstream gammaFile("gammaRange.dat");
-  std::cout<<"Log binning for electrons(Lorentz factor)"
-	   <<std::endl;
-  for (int i = 1; i <= gammaPoints; ++i)
-    {
-      egamma->push_back(r2 * abscissa); // Calc log-space mid-point for grid
-      abscissa += (r * abscissa);  // Add grid width to abscissa to find
-      //std::cout<<r2<<"\t"<<(abscissa)<<std::endl;
-      //gammaFile<<r2 * abscissa<<std::endl;
-
-    }
-
-}
-
-//.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-void Shells::powerLaw()
-{
-  //double n0 = ne*(p-1.0);
-  double n0 = getPLawNorm();
-  double gammaMin = getGammaMin();
-  double gammaMax = getGammaMax();
-
-  for (std::vector<double>::iterator n = gammaGrid->begin(),
-	 gamma = egamma->begin(); gamma != egamma->end(); ++n, ++gamma)
-    {
-      // quicker than starting at begin()+index(gamma_min)?
-      if (*gamma >= gammaMin)
-	{
-	  if (*gamma <= gammaMax)
-	    {
-	      *n += n0 * pow(*gamma, -extPowLawInd);
-	    }
-	  else
-	    {
-	      *n = 0.0;
-	    }
-	}
-    }
-}
-
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....

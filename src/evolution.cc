@@ -80,16 +80,9 @@ void Evolution::evolve(int &duration)
 
       //the range of freq for getting the synchrtron spectrum
       nu = new std::vector<double>;
-      egamma = new std::vector<double>;
-      
-      //populating the gamma container (duplicate of the one in Shells)
-      gammaRange(egamma);
-      
+           
       //populating the freq container
       freqRange(nu);
-
-      //Compton Table
-      compTable(nu, egamma);
 
       //For getting the average flux
       fluxNu1 = new std::vector<double>;
@@ -158,7 +151,7 @@ void Evolution::evolve(int &duration)
           ++shellIT; ++shellMT; ++shellGT; ++shellLT;
           iS = *shellIT; mS = *shellMT; gS = *shellGT; lS = *shellLT;
           t_now = *shellIT;
-
+	  	  
           activeShells->injectShell(iS, mS, gS, lS);
           activeShells->updateShellParams(t_now);
 
@@ -1461,61 +1454,3 @@ void Evolution::splitLightcurve(Container *activeSh, double &tNow)
 }
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-void Evolution::compTable(std::vector<double> *nu, std::vector<double> *g)
-{
-  std::vector<double>::iterator nuIter_1, nuIter_0, gIter;
-
-  try
-    {
-      // Create the xF_c(x) array as size_nu*size_nu*size_gamma
-      comptonVect = new std::vector<double>((*nu).size()*(*nu).size()*(*g).size(),
-				       0.0);
-      for(gIter = g->begin(); gIter != g->end(); ++gIter)
-	{
-	  for(nuIter_1 = nu->begin(); nuIter_1 != nu->end(); ++nuIter_1)
-	    {
-	      for(nuIter_0 = nu->begin(); nuIter_0 != nu->end(); ++nuIter_0)
-		{
-
-
-
-		}
-	    }
-	}
-
-    }
-  catch(std::bad_alloc)
-    {
-      std::cerr<<"Memory error in compTable while creating the table";
-    }
-}
-//.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-void Evolution::gammaRange(std::vector<double> *egamma)
-{
-  //egamma = new std::vector<double>;
-  double min = exteGammaMin;
-  double max = exteGammaMax;
-
-  int gammaPoints = extgammaPoints;
-
-  double abscissa = min;
-  double r = pow(max / min, 1.0 / gammaPoints);
-  double r2 = sqrt(r);
-  r -= 1.0;
-
-  //writing the frequency range file
-  //useful when sampling many frequencies
-
-  std::ofstream gammaFile("gammaRange.dat");
-  std::cout<<"Log binning for electrons(Lorentz factor)"
-	   <<std::endl;
-  for (int i = 1; i <= gammaPoints; ++i)
-    {
-      egamma->push_back(r2 * abscissa); // Calc log-space mid-point for grid
-      abscissa += (r * abscissa);  // Add grid width to abscissa to find
-      //std::cout<<r2<<"\t"<<(abscissa)<<std::endl;
-      gammaFile<<r2 * abscissa<<std::endl;
-
-    }
-
-}

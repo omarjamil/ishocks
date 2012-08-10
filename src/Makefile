@@ -41,6 +41,13 @@ spotless:
 depend: $(SRCS) $(HDRS)
 	$(CC) -MM $(CPFLAGS) $(INCLUDE) $(SRCS) > depend
 
+
+# run "make debug"
+# "./debug" will produce "gmon.out"
+# "gprof debug" can be used to analyze the output
+debug:
+	$(CC) -pg $(OBJECTS) $(LDLIBS) $(LDFLAGS) -o ../$@
+
 #depend: 
 #	$(CC) -MM $(CPFLAGS) $(INCLUDE) $(SRCS) > depend
 
