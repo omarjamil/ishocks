@@ -5,13 +5,13 @@ simulation.o: simulation.cc ../include/simulation.hh \
  ../include/funcobj.hh ../include/shells.hh ../include/mergers.hh \
  ../include/container.hh ../include/evolution.hh ../include/evolution.hh \
  ../include/paraccess.hh
-radiation.o: radiation.cc ../include/radiation.hh ../include/shells.hh \
- ../include/container.hh ../include/paraccess.hh ../include/physcon.hh
 numerical.o: numerical.cc ../include/numerical.hh
 shells.o: shells.cc ../include/shells.hh ../include/physcon.hh \
  ../include/parameters.hh ../include/paraccess.hh
 parameters.o: parameters.cc ../include/parameters.hh \
  ../include/numerical.hh ../include/physcon.hh
+radiation.o: radiation.cc ../include/radiation.hh ../include/shells.hh \
+ ../include/container.hh ../include/paraccess.hh ../include/physcon.hh
 run.o: run.cc ../include/simulation.hh ../include/funcobj.hh \
  ../include/shells.hh ../include/mergers.hh ../include/container.hh \
  ../include/evolution.hh ../include/parameters.hh ../include/paraccess.hh
