@@ -12,10 +12,10 @@
 #include <iterator>
 #include <fstream>
 
-#include "shells.hh"
-#include "physcon.hh"
-#include "parameters.hh"
-#include "paraccess.hh"
+#include "shells.hxx"
+#include "physcon.hxx"
+#include "parameters.hxx"
+#include "paraccess.hxx"
 
 //a small macro for square function
 #define sqr(a) ((a)*(a))

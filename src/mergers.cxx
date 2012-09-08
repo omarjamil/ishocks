@@ -14,10 +14,10 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include "mergers.hh"
-#include "funcobj.hh"
-#include "physcon.hh"
-#include "paraccess.hh"
+#include "mergers.hxx"
+#include "funcobj.hxx"
+#include "physcon.hxx"
+#include "paraccess.hxx"
 
 //a small macro for square function
 #define sqr(a) ((a)*(a))

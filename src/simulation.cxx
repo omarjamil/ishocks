@@ -13,9 +13,9 @@
 #include <iostream>
 
 
-#include "simulation.hh"
-#include "evolution.hh"
-#include "paraccess.hh"
+#include "simulation.hxx"
+#include "evolution.hxx"
+#include "paraccess.hxx"
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 Simulation::Simulation()

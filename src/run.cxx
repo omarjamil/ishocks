@@ -8,43 +8,40 @@
 //                                                                    //
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo....//
 
-//putting the simulation together.
+//the run file containing the main function.
 
-#ifndef SIMULATION_HH
-#define SIMULATION_HH
+#include <iostream>
+#include <iterator>
+#include <iostream>
+#include <ctime>
+
+#include "simulation.hxx"
+#include "parameters.hxx"
+#include "paraccess.hxx"
 
 
-#include <algorithm>
-#include <functional>
-
-#include "funcobj.hh"
-#include "container.hh"
-#include "evolution.hh"
-
-//.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-class Simulation
+int main()
 {
   
-public:
-  Simulation(); 	//the default constructor
-  //Simulation(const Simulation &c);
-  ~Simulation();
   
-  void run(int &, double &);
+  // int duration = 200;
+//   double luminosity = 2e24;
   
-  //protected:
+  std::time_t timeStart, timeEnd;
+  time(&timeStart);
   
+  Simulation sim;
   
-  
-private:
-  
-  //Container *shells;
-  Container *liveShells;
-  Evolution *time;
+  //simDuration and jetLum accessed from paraccess.h
+  //that reads the parameter file in.
    
+  sim.run(extSimDuration, extJetLum);
+  
+  time(&timeEnd);
+  double diff = difftime(timeEnd, timeStart) / 60.;
+  std::cout<<"CPU time usage for the Simualtion [minutes]: "<<diff<<std::endl;
     
-};
+  return 0;
+  
+}
 
-//.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-
-#endif // SIMULATION_HH

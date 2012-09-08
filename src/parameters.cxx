@@ -8,9 +8,9 @@
 //                                                                    //
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo....//
 
-#include "parameters.hh"
-#include "numerical.hh"
-#include "physcon.hh"
+#include "parameters.hxx"
+#include "numerical.hxx"
+#include "physcon.hxx"
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 Parameters::Parameters(std::string fn)

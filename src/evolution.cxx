@@ -18,11 +18,11 @@
 #include <algorithm>
 #include <string>
 
-#include "evolution.hh"
-#include "funcobj.hh"
-#include "physcon.hh"
-#include "paraccess.hh"
-#include "radiation.hh"
+#include "evolution.hxx"
+#include "funcobj.hxx"
+#include "physcon.hxx"
+#include "paraccess.hxx"
+#include "radiation.hxx"
 
 //used for multi runs and search through parameter space
 //also produces a file with average spectral index and spectral index

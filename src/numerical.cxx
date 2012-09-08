@@ -13,7 +13,7 @@
 #include <vector>
 
 
-#include "numerical.hh"
+#include "numerical.hxx"
 
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....

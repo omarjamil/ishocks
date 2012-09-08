@@ -16,8 +16,8 @@
 
 #include <vector>
 
-#include "container.hh"
-#include "mergers.hh"
+#include "container.hxx"
+#include "mergers.hxx"
 //#include "parainclude.h"
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....

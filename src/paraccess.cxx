@@ -13,7 +13,7 @@
 // with extern keyword in other classes. The following are the
 // definitions.
 
-#include "parameters.hh"
+#include "parameters.hxx"
 
 Parameters params("parameters.par");
 bool extLoadPrevSim = params.loadPrevSim();

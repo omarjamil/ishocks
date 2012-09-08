@@ -11,8 +11,8 @@
 #ifndef MERGERS_HH
 #define MERGERS_HH
 
-#include "shells.hh"
-#include "container.hh"
+#include "shells.hxx"
+#include "container.hxx"
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 

@@ -16,7 +16,7 @@
 #include <cmath>
 #include <vector>
 
-#include "shells.hh"
+#include "shells.hxx"
 
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....

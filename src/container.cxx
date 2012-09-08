@@ -20,11 +20,11 @@
 #include <stdexcept>
 //#include <memory>
 
-#include "container.hh"
-#include "shells.hh"
-#include "physcon.hh"
-#include "paraccess.hh"
-#include "numerical.hh"
+#include "container.hxx"
+#include "shells.hxx"
+#include "physcon.hxx"
+#include "paraccess.hxx"
+#include "numerical.hxx"
 
 #define sqr(a) ((a)*(a))
 

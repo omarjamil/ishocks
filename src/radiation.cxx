@@ -11,9 +11,9 @@
 #include <cmath>
 #include <iostream>
 
-#include "radiation.hh"
-#include "paraccess.hh"
-#include "physcon.hh"
+#include "radiation.hxx"
+#include "paraccess.hxx"
+#include "physcon.hxx"
 
 //a small macro for square function
 #define sqr(a) ((a)*(a))

@@ -20,8 +20,8 @@
 #include <cmath>
 
 
-#include "shells.hh"
-#include "mergers.hh"
+#include "shells.hxx"
+#include "mergers.hxx"
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 

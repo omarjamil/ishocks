@@ -8,39 +8,43 @@
 //                                                                    //
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo....//
 
-#ifndef RADIATION_H
-#define RADIATION_H
-//Ref: Longair, '02 ~pg 250 - 262
-#include <vector>
-#include "shells.hh"
-#include "container.hh"
+//putting the simulation together.
 
+#ifndef SIMULATION_HH
+#define SIMULATION_HH
+
+
+#include <algorithm>
+#include <functional>
+
+#include "funcobj.hxx"
+#include "container.hxx"
+#include "evolution.hxx"
 
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
-class Radiation
+class Simulation
 {
   
 public:
-  Radiation(); 
-  //Radiation(const Radiation &c);
-  ~Radiation();
+  Simulation(); 	//the default constructor
+  //Simulation(const Simulation &c);
+  ~Simulation();
   
-  void synchSpectrum(std::vector<double> *, Container *);
+  void run(int &, double &);
   
-  //Sunchrotron Power per unit volume per unit frequency
-  double synchrotronEmiss(double &, double &, double &, double &);
+  //protected:
   
-  //Synchrotron absorption coefficient
-  double synchrotronAbsor(double &, double &, double &, double &);
-
+  
+  
 private:
-  std::vector<double> *nu;
-  std::vector<double> *iNu;
- 
-    
   
- 
+  //Container *shells;
+  Container *liveShells;
+  Evolution *time;
+   
+    
 };
+
 //.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....oooOO0OOooo.....
 
-#endif // RADIATION_H
+#endif // SIMULATION_HH
