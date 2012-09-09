@@ -1,0 +1,53 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]
+then
+    echo -e "Usage: Possible script arguments are \n $0 build \n $0 build debug \n $0 build release\n $0 clean \n $0 make \n $0 make clean \n"
+    echo -e "'clean' removes the executable and BUILD directory\n"
+    echo -e "'build' can take arguments: \n $0 build debug (compile with debugging flags) \n $0 build release (compile with optimization flags) \n No argument defaults to release \n"
+    echo -e "'make' runs make in the BUILD directory"
+    echo -e "'make' can take arguments: \n $0 make clean (run 'make clean' in BUILD)"
+    exit 0
+fi
+
+case "$1" in
+    "build")
+	echo "Building iShocks..." 
+	mkdir BUILD
+	cd BUILD
+	case "$2" in
+	    "") echo "No build arguments provided; defaulting to release"
+		cmake -DCMAKE_BUILD_TYPE=release .. ;;
+	    "debug") cmake -DCMAKE_BUILD_TYPE=debug .. ;;
+	    "release") cmake -DCMAKE_BUILD_TYPE=release .. ;;
+	esac
+	make 
+	cd ..
+	echo "You will find the excutable in:"
+	pwd ;;
+    "make")
+	if [ -d BUILD ]
+	then
+	    case "$2" in
+		"") echo "running 'make' in BUILD"
+		    cd BUILD
+		    make;;
+		"clean") echo "running 'make clean' in BUILD"
+		    cd BUILD
+		    make clean ;;
+	    esac
+	else
+	    echo "no BUILD directory"
+	fi ;;
+    "clean")
+	if [ -d BUILD ]
+	then
+	    echo "Cleaning up: removing executable and BUILD directory"
+	    cd BUILD
+	    make clean
+	    cd ..
+	    rm -rf BUILD
+	else
+	    echo "No BUILD directory"
+	fi ;;
+esac

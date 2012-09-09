@@ -6,13 +6,13 @@
 
 The precompile version should work.
 
-If not, and if on Linux, run setup.linux script:
-      > setup.linux build
+If not, and if on Linux, run build.linux script:
+      > build.linux build
       The above will default to release type build i.e. optimized
       Or you can change build type
-      > setup.linux build debug/release
-you can also use setup.linux to clean up:
-      > setup.linux clean
+      > build.linux build debug/release
+you can also use build.linux to clean up:
+      > build.linux clean
 
 Otherwise or other systems cd to "BUILD" folder and type: 
 
