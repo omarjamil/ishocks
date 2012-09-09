@@ -6,16 +6,25 @@
 
 The precompile version should work.
 
-If not then cd to "src" folder and type: 
+If not, and if on Linux, run setup.linux script:
+      > setup.linux build
+      The above will default to release type build i.e. optimized
+      Or you can change build type
+      > setup.linux build debug/release
+you can also use setup.linux to clean up:
+      > setup.linux clean
 
-      > make clean
+Otherwise or other systems cd to "BUILD" folder and type: 
 
-and then (requires gcc compilers to be installed on your machine): 
+      > cmake -DCMAKE_BUILD_TYPE=release ..
+
+CMAKE will produce the necessary build file. On linux this will be a Makefile
+(requires c/c++ compilers and stdc++ to be installed on your machine): 
     
       > make
 
 This should create an "ishocks" executable in the folder one up from
-src. To run please go to the folder above src and type:
+BUILD. To run please go to the folder above BUILD and type:
 
       > ./ishocks
 

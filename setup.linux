@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]
+then
+    echo "Usage: script arguments are build or clean"
+    echo "For build there are further argument: debug or release"
+    exit 0
+fi
+
+case "$1" in
+    "build")
+	echo "Building iShocks..." 
+	mkdir BUILD
+	cd BUILD
+	case "$2" in
+	    "") echo "No build arguments provided; defaulting to release"
+		cmake -DCMAKE_BUILD_TYPE=release .. ;;
+	    "debug") cmake -DCMAKE_BUILD_TYPE=debug .. ;;
+	    "release") cmake -DCMAKE_BUILD_TYPE=release .. ;;
+	esac
+	make 
+	cd ..
+	echo "You will find the excutable in:"
+	pwd ;;
+    "clean")
+	if [ -d BUILD ]
+	then
+	    echo "Cleaning up: removing executable and BUILD directory"
+	    cd BUILD
+	    make clean
+	    cd ..
+	    rm -rf BUILD
+	else
+	    echo "No BUILD directory"
+	fi ;;
+esac

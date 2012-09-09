@@ -1,5 +1,5 @@
 project(iShocks)
-subdirs(src)
+subdirs(SRC)
 
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR})
 
