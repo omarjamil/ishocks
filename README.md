@@ -32,20 +32,31 @@ can change their name in parameters.par), "avgSpecInd.dat" and
 "paraFile.dat" (you can ignore this one, I used this for param search runs). 
 
 Column 1 in "lightcurve.dat" is time in seconds. 
+
 Column 2 is the radio(or nu_1) flux in Jy
+
 Column 3 is the IR (nu_2) flux in Jy
+
 Column 4 is the spectral index. In this case it is the ratio of nu_2/nu_1 
 (higher over lower).
 
+
 "resultsFile.dat" can be used to plot indvidual shells along the jet.
+
 Column 1 in "resultsFile.dat" is the position along the jet.
+
 Column 2 is the radio(or nu_1) flux in Jy.
+
 Column 3 is the IR (or nu_2) flux in Jy.
+
 Column 4 is the individual shell length
 
 "avgSpecInd.dat"
+
 Column 1 is the average nu_1 flux in Jy.
+
 Column 2 is the average nu_2 flux in Jy.
+
 Column 3 is the average spec index.
 
 Please delete or move the above files before another run otherwise the
