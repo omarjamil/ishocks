@@ -1,0 +1,128 @@
+The shell launcher generates the shell input file with launch times,
+masses, Gammas and shell widths.  It works by constructing noise
+process time series using a series (up to 10) of PSD shapes which are
+combined to make the required time series for mdot fluctuations and
+Gamma (the input time series used to generate the shells are also
+produced as output).  After compiling it (hopefully g77 will work with
+it) you need a parameter file (launch.in), e.g. see below, in the same
+directory, and simply call the shell launcher from the command line
+(no inputs required).
+
+The input parameter file (called launch.in) is set out like this:
+
+100000 0.001 1.0 1.0 1.0 1.0 -3 n 10.0  
+test2sl.dat test2lc.dat
+0.9
+y 1.e7 
+0.0 1.0 20.0 1e-10 2.0 1.0 0.02 0.1 0.5 4 0.0 y y 
+0.0 1.0 20.0 1e-10 2.0 1.0 0.02 1.0 0.5 4 0.0 n y
+
+where the parameters are: 
+npoints bsize k_m m_ind k_g g_ind idum cmass slrate 
+slfl lcfl
+l_scale
+cwidth width 
+a f0 p(1) p(2) p(3) p(4) p(5) p(6) p(7) mod rms gamq massq 
+a f0 p(1) p(2).....for each successive PSD component (up to 10
+of these rows)
+
+The input file parameters are as follows:
+
+npoints: number of time bins  
+bsize: time bin size  
+k_m: mass normalisation (1.0 gives an average shell mass of 1.0 units, whatever
+they may be  
+m_ind: mass index, applied to the mdot time series,
+should normally be set to 1.0 
+k_g: Gamma normalisation - sets average BLF value 
+g_ind: Gamma index - index for how Gamma scales with 
+idum: random number seed (must be -ve integer) 
+cmass: query about whether to
+use constant mass shells (y) or constant intervals for shell launch
+and variable mass (n) 
+slrate: the shell launch rate (average number
+launched per unit time, will be equal to 1/(launch interval) for
+cmass=n, and <1/(launch interval)> for cmass=y)
+
+slfl: the output file name containing shell info
+(time,mass,Gamma,width) 
+lcfl: file produced with the mdot and Gamma
+time series (time,mdot,Gamma)
+
+Then there is one row for each PSD component, with the following
+params: 
+a: normalisation of PSD component, may be arbitrary (not
+zero!) if rms of component is specified, not used for Lorentzians so
+may be set to 0 in that case (e.g. in example file).  
+f0: normalisation frequency, where a is defined 
+p(i): PSD shape parameters, designation varies depending on PSD model
+(see below) 
+mod: PSD model, 1=broken power-law, 4=QPO (don't worry about the others)
+rms: the fractional rms of the component - PSD will be renormalised to
+match this, but it is redundant in QPO case (use QPO rms parameter to
+set rms) 
+gamq: queries whether this PSD component will contribute to
+Gamma time series (y if it will, n if it won't) 
+massq: as gamq but for mdot time series
+
+More info on the PSD parameters: 
+For broken power-law PSD (mod=1),
+which can generate a doubly-broken power-law: p(1)=high-frequency
+break frequency p(2)=low-frequency break frequency p(3)=high-freq
+slope p(4)=intermediate-freq slope p(5)=low-freq slope p(6) and p(7)
+are redundant
+
+so, an approximation of a low/hard state (without splitting into
+Lorentzians) would be for p(1-5): 3.0 0.1 2.0 1.0 0.0   and set
+rms=0.3 or 0.4 A soft state, with singly-broken power-law (Cyg X-1
+type, remember though that we should prob consider only the PL
+behaviour here, so rms should be high in absence of disc dilution):
+p(1-5): 15.0 1e-10 2.0 1.0 1.0 (i.e. we have set the LF break very
+low, and for good measure made int and low slopes identical at -1).
+Again, in absence of disc dilution, rms here should be 0.3-0.4 ish,
+maybe even higher.
+
+For the QPO case shown in the example file (mod=4), modelled as a
+Lorentzian, we have: a,f0 and p(1-4) not used p(5)= QPO variance in
+fractional units, sqrt for fractional rms p(6)= Lorentzian peak
+frequency p(7)= Q-factor (peak frequency/FWHM)
+
+By combining Lorentzians with different frequencies you can make more
+realistic hard state type PSDs, and even assign gamma and mdot
+fluctuations to different Lorenztians, you could similarly make time
+series consisting of broken power-laws plus Lorentzians.  In the above
+example, the time series consists of 2 broad Lorentzians (frequencies
+0.1 and 1 Hz), with both contributing to the mdot fluctuations (which
+governs shell launch-time/mass fluctuations) but only the
+low-frequency one contributing to Gamma variations (e.g. if this one
+also corresponded to inner disc oscillations which might plausibly
+cause variations in Gamma).  A simpler model might assume both Gamma
+and mdot follow the same time series.
+
+Note on combining PSD components: firstly, the rms is that for the
+input time series, but the true final rms is the combination of the
+two, and they add in quadrature (i.e. rms_tot=sqrt(rms1^2+rms2^2)) -
+this is because the *variances* (i.e. rms^2) of independent time
+series combine linearly together.  Secondly, in order to make
+realistic looking time series, the series produced are 'exponentiated'
+i.e. we take exp(x_i) from the initial ones (x_i) generated by the
+Timmer & Koenig method, which are linear and Gaussian with mean=0.
+The exponentiation means the distribution of points becomes lognormal,
+which has the benefit that points can never drop below 0, regardless
+of how high the variance is (note: the BLF is further constrained not
+to drop below 1).  However, for large fractional rms, the series
+become increasingly skewed and non-linear, and the effect of the
+exponential transformation is also to increase the rms, so that it
+will be a bit higher than the input values, the discrepancy getting
+worse for larger rms.  For input total fractional rms rms_lin, the
+exponentiated series fractional rms rms_exp is related to rms_lin by:
+
+rms_exp^2=exp(rms_lin^2)*(exp(rms_lin^2)-1)
+
+I haven't hardwired this correction in yet, since it also has a -
+somewhat complicated - bearing on the input rms values for separate
+components, so probably best not to worry about it for now, but bear
+it in mind if you want to generate things with large fractional rms.
+
+That's all for now, enjoy!
+

@@ -1,0 +1,76 @@
+Parameters file terms:
+
+jet_luminosity = 	Jet Luminosity in SI units [J s-1]
+jet_opening_angle = 	Opening angle for the jet [degreees]
+source_distance =       Distance to the source [parsecs] (converted to
+                        metres in parameters.h)
+
+BLF_max = 		Maximum bulk Lorentz factor for the shells
+shell_width = 		Shell width at their creation [m]
+
+
+
+EThermal_frac = 	Fraction of Total Internal energy given to the Shell Thermal energy
+			and hence used for shell expansion between collisions.
+EelecKin_frac =         Fraction of Total internal energy given to electrons kinetic energy.
+EMagnet_frac =          Fraction of Total internal energy given to the magnetic field.
+
+powerlaw_index =        Electrons distribution powerlaw index
+e_gamma_min =           Electrons powerlaw dist gamma min
+e_gamma_max =           Electrons powerlaw dist gamma max (starting
+                        point, evolves with adiabatic losses)      
+
+nu_min =                Min freq for the range of spectrum obtained
+nu_max =                Max freq for the range of spectrum obtained
+nu_points =             number of grid points for the range of frequency; logarithmic grid.
+
+individual_frequencies  1=true, 0 = false; When true only the nu_1 and nu_2
+nu_1 =                  first frequency (Hz)
+nu_2 =                  second frequency (Hz)
+data_file =             Name of the data file to read; Used for
+                        lightcurce data. Give file extension as well.
+
+increase_time_resolution       1=true, 0 =false; when true, there is
+                               increased sampling. Unlike moving from
+                               "event" to "event" when false.       
+step_resolution =              time step resolution when above true [s]
+total_run_duration =           total run time for the simuation when
+                               above true[s]
+
+avg_ejection_time =     Average time gap between shell ejection [s]
+shell_inj_duration = 	Duration the shells are injected for; This will
+                        determine how far the shells will get to
+			in the jet and hence the final size of the
+                        jet. Used if use_shell_file = false.
+                        [s]
+                        
+use_shell_file =        1=true, 0 =false; When true the model reads
+                        shell properties (injection time, mass, BLF, length) from a file.
+shell_file =            The name of the file to read the above
+                        properties from.
+
+use_data_file =         1=true, 0 =false; When true the model reads an
+                        X-ray light curve and produces a shell_file
+                        with the above name to be read the model.          
+data_file =             Name of the X-ray lightcurve file.            
+results_file = 		Name of results file to be written. Give file extension as well.
+
+in_vacuum_expansion =   1=true, 0=false; This means no work is done by
+                        the lateral expansion of the
+                        jet. This will only re-calculate the power-law
+                        normalisation and magnetic energy density
+                        based on new volume rather than have energy
+                        losses.
+
+inj_int_energy =        1=true, 0=false; Inject the shells with
+                        internal energy.
+rel_mass_frac =         Fraction of shell rest mass energy to be the
+                        internal energy (1=100%)
+
+shock_location =        Location of the shock i.e. location where the
+                        shells are energized. Allows to explore single
+                        shock zone model.
+                        [light seconds]
+
+slow_energization =     1=true, 0=false. Energize shells depending on
+                        the shock crossing time. For mergers only.

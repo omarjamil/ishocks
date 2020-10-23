@@ -1,0 +1,55 @@
+load_prev_shells = n
+dump_active_at_end = n 
+
+//used if use_shell_file=0
+jet_luminosity = 1e+30
+BLF_min = 1.5
+BLF_max = 2.0
+shell_width_factor = 0.9
+
+jet_opening_angle = 5.0
+jet_viewing_angle = 70.0
+source_distance = 2.e3
+
+EThermal_frac = 0.33
+EelecKin_frac = 0.33
+EMagnet_frac = 0.33
+
+powerlaw_index = 2.1
+e_gamma_min = 1.
+e_gamma_max = 1.e6    
+
+nu_min = 1.e7
+nu_max = 1.e20
+nu_points = 40
+
+individual_frequencies = n
+nu_1 = 15.e9
+nu_2 = 1.36e17
+
+increase_time_resolution = n
+step_resolution = 1000.
+total_run_duration = 10000000.
+
+//used when use_shell_file=n
+shell_inj_duration = 10000.
+avg_ejection_gap = 1.0
+
+use_shell_file = n
+shell_file = sh.dat
+
+write_results_file = n
+results_file = resultsFile.dat
+write_every = 1
+
+//write the last time step only/as well
+final_time_step = y
+lightcurve_file = lightcurve.dat
+
+//if in_vac.. 'on' then set Etherm..= 0
+in_vacuum_expansion = n
+inj_int_energy = y
+rel_mass_frac = 0.01
+shock_location = 0.0
+
+slow_energization = y

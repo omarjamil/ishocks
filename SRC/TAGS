@@ -1,0 +1,448 @@
+
+container.cc,540
+#define sqr(29,1013
+Container::Container(34,1144
+Container::~Container(40,1296
+void Container::populateWithShells(64,1667
+void Container::updateShellParams(186,5516
+void Container::shellData(225,6316
+double Container::gaussian(270,7619
+void Container::coutContainerElements(281,7949
+void Container::majorEjection(302,8557
+void Container::overlapPrevention(333,9634
+bool Container::fileExists(381,11211
+void Container::injectShell(394,11509
+void Container::dumpActiveShells(408,11982
+void Container::readActiveShells(498,15626
+
+evolution.cc,705
+#define SPLIT_LC35,1222
+#define TAU_WRITE40,1401
+Evolution::Evolution(48,1583
+Evolution::~Evolution(55,1756
+void Evolution::evolve(65,1930
+void Evolution::evolveIncrSampling(320,10006
+double Evolution::minCollisionTime(600,19149
+double Evolution::collisionTime(664,20641
+double Evolution::dtNextInjection(723,22633
+void Evolution::results(738,23098
+void Evolution::results(897,28014
+void Evolution::freqRange(1021,31489
+void Evolution::avgLC(1065,32566
+void Evolution::finalTStepTau(1123,34065
+void Evolution::finalTStep(1190,36024
+bool Evolution::fileExists(1257,38044
+void Evolution::tauWrite(1277,38546
+void Evolution::splitLightcurve(1333,40131
+void Evolution::compTable(1498,46370
+
+mergers.cc,276
+#define sqr(23,905
+Mergers::Mergers(30,1098
+Mergers::~Mergers(36,1267
+void Mergers::doMerger(43,1414
+double Mergers::inNewShellWidth(291,11136
+double Mergers::ouNewShellWidth(314,11801
+double Mergers::mergedShellIntEner(336,12465
+void Mergers::mergeLocCount(365,13443
+
+numerical.cc,308
+Numerical::Numerical(20,813
+Numerical::~Numerical(25,913
+void Numerical::polint(29,1013
+double Numerical::trapz(72,1971
+double Numerical::midinf(97,2472
+double Numerical::midexp(137,3213
+double Numerical::romberg(179,3956
+double Numerical::gammalnFunction(220,5044
+double Numerical::random(245,5635
+
+paraccess.cc,1386
+bool extLoadPrevSim 19,939
+bool extDumpActive 20,983
+double extJetLum 21,1025
+double extJetOpenAngle 22,1068
+double extJetViewAngle 23,1116
+double extSourceDistance 24,1164
+double extEjTimeGap 25,1216
+int extSimDuration 26,1260
+double extGamMax 27,1300
+double extGamMin 28,1338
+double extShWidth 29,1376
+double extShThermalEne 30,1417
+double extShIntKine 31,1465
+double extShIntMag 32,1510
+double extPowLawInd 33,1555
+double exteGammaMin 34,1602
+double exteGammaMax 35,1644
+double extnuMin 36,1686
+double extnuMax 37,1720
+int extnuPoints 38,1754
+int extgammaPoints 39,1791
+bool extindivFreq 40,1834
+double extnu1 41,1874
+double extnu2 42,1905
+bool extUseShellFile 43,1936
+double extSynchConstAp 44,1982
+double extSynchConstBp 45,2031
+std::string extShellFile 46,2080
+bool extUseDataFile 47,2131
+std::string extDatFile 48,2175
+std::string extResultsFile 49,2223
+int extEveryTStep 50,2278
+bool extIncreaseTimeStep 51,2319
+double extStepResolution 52,2373
+double extTotalDuration 53,2425
+bool extInVacuum 54,2475
+bool extInjIntEne 55,2513
+double extRelMassFrac 56,2553
+bool extSlowEnerg 57,2599
+bool extUseResFile 58,2646
+std::string extLCFile 59,2692
+bool extFinalTStep 60,2733
+double extShockLoc 61,2775
+double extUp1 63,2836
+double extUp2 64,2866
+double extUp3 65,2896
+double extUp4 66,2926
+double extUp5 67,2956
+bool extSplitLC 68,2986
+
+parameters.cc,193
+Parameters::Parameters(16,802
+Parameters::~Parameters(30,1033
+void Parameters::loadParametersFile(34,1135
+double Parameters::synchConstap(339,8519
+double Parameters::synchConstbp(356,9105
+
+radiation.cc,209
+#define sqr(19,803
+Radiation::Radiation(23,935
+Radiation::~Radiation(27,1034
+void Radiation::synchSpectrum(32,1135
+double Radiation::synchrotronEmiss(183,6292
+double Radiation::synchrotronAbsor(217,7283
+
+run.cc,17
+int main(23,858
+
+shells.cc,735
+#define sqr(21,844
+Shells::Shells(27,1042
+Shells::~Shells(59,2064
+void Shells::setLowerAndUpperX(68,2212
+void Shells::setMergeCount(75,2404
+void Shells::shellInitialization(80,2555
+void Shells::setDimensions(105,3101
+void Shells::setInitialMergedVA(164,4774
+void Shells::setExpansionBeta(190,5365
+double Shells::powerlawNorm(213,6063
+void Shells::adiabaticLosses(274,7970
+double Shells::dopplerFactor(373,11319
+double Shells::initialBEnergyDensity(391,11741
+double Shells::setMagParams(406,12202
+void Shells::inVacuumExpansion(421,12479
+void Shells::slowEnergization(436,12943
+void Shells::shockZone(484,14553
+void Shells::radiativeLosses(531,16304
+void Shells::gammaRange(565,17250
+void Shells::powerLaw(596,18091
+
+simulation.cc,93
+Simulation::Simulation(21,861
+Simulation::~Simulation(26,963
+void Simulation::run(34,1184
+
+container.hh,137
+#define CONTAINER_HH13,680
+class Container 23,849
+  void outOfStore(Container::outOfStore72,2171
+private:Container::private78,2287
+
+evolution.hh,386
+#define EVOLUTION_HH14,712
+class Evolution26,902
+  Container *activeShells;Evolution::activeShells82,2458
+  Mergers *merger;Evolution::merger83,2485
+  std::vector<double> *nu;Evolution::nu84,2504
+  std::vector<double> *fluxNu1;Evolution::fluxNu188,2595
+  std::vector<double> *fluxNu2;Evolution::fluxNu289,2627
+  std::vector<double> compVector;Evolution::compVector93,2775
+
+funcobj.hh,1144
+#define FUNCOBJ_HH12,677
+class FindShellWithShell28,1020
+  Shells *shell;FindShellWithShell::shell30,1047
+  FindShellWithShell(FindShellWithShell::FindShellWithShell34,1078
+  bool operator()(FindShellWithShell::operator()37,1127
+class FindShellWithDouble48,1327
+  double t;FindShellWithDouble::t50,1355
+  FindShellWithDouble(FindShellWithDouble::FindShellWithDouble53,1383
+  bool operator()(FindShellWithDouble::operator()56,1430
+class FindLowerBound67,1605
+  FindLowerBound(FindLowerBound::FindLowerBound72,1658
+  bool operator()(FindLowerBound::operator()75,1684
+class FindUpperBound86,1875
+  FindUpperBound(FindUpperBound::FindUpperBound91,1928
+  bool operator()(FindUpperBound::operator()94,1954
+class XFindLowerBound106,2146
+  XFindLowerBound(XFindLowerBound::XFindLowerBound111,2200
+  bool operator()(XFindLowerBound::operator()114,2227
+class Sortfunc 135,2909
+  bool operator()(Sortfunc::operator()140,2996
+class deleteAll149,3268
+  deleteAll(deleteAll::deleteAll152,3295
+  bool operator()(deleteAll::operator()154,3315
+struct delete_ptr 163,3502
+  bool operator()(delete_ptr::operator()165,3559
+
+mergers.hh,382
+#define MERGERS_HH12,677
+class Mergers 21,839
+  double getInnerShell(Mergers::getInnerShell47,1475
+  double getOuterShell(Mergers::getOuterShell52,1556
+  Shells *innerShell;Mergers::innerShell62,1699
+  Shells *outerShell;Mergers::outerShell63,1721
+  double i;Mergers::i64,1743
+  double m;Mergers::m65,1755
+  double g;Mergers::g66,1767
+  bool sh;Mergers::sh67,1779
+
+numerical.hh,377
+#define NUMERICAL_HH13,680
+class Numerical19,810
+  typedef double (*pfn)Numerical::pfn28,1001
+  typedef double choose(Numerical::choose30,1084
+  inline double rombergIntegration(Numerical::rombergIntegration32,1154
+  inline double gammaFunction(Numerical::gammaFunction39,1327
+  double funcInf(Numerical::funcInf76,2335
+  double funcExp(Numerical::funcExp81,2438
+
+paraccess.hh,28
+#define PARACCESS_HH15,810
+
+parameters.hh,5051
+#define PARAMETERS_HH12,680
+class Parameters22,856
+  bool loadPrevSim(Parameters::loadPrevSim32,1069
+  bool dumpActive(Parameters::dumpActive37,1126
+  double jetLuminosity(Parameters::jetLuminosity42,1182
+  double openingAngle(Parameters::openingAngle47,1245
+  double viewingAngle(Parameters::viewingAngle52,1304
+  double sourceDistance(Parameters::sourceDistance57,1365
+  double ejectionGap(Parameters::ejectionGap62,1449
+  int duration(Parameters::duration68,1510
+  double GammaMax(Parameters::GammaMax73,1560
+  double GammaMin(Parameters::GammaMin78,1611
+  double shellWidth(Parameters::shellWidth83,1664
+  double shellThermal(Parameters::shellThermal88,1716
+  double shellIntKine(Parameters::shellIntKine93,1775
+  double shellMagnetic(Parameters::shellMagnetic98,1832
+  double ePowerLawIndex(Parameters::ePowerLawIndex103,1891
+  double eGammaMin(Parameters::eGammaMin108,1949
+  double eGammaMax(Parameters::eGammaMax113,1999
+  double nuMin(Parameters::nuMin118,2049
+  double nuMax(Parameters::nuMax123,2096
+  int nuPoints(Parameters::nuPoints128,2143
+  int gammaPoints(Parameters::gammaPoints133,2191
+  bool indivFreq(Parameters::indivFreq138,2247
+  double nu_1(Parameters::nu_1143,2313
+  double nu_2(Parameters::nu_2148,2358
+  double synchConstA_P(Parameters::synchConstA_P154,2406
+  double synchConstB_P(Parameters::synchConstB_P160,2474
+  bool useShellFile(Parameters::useShellFile166,2540
+  std::string shellFileName(Parameters::shellFileName171,2599
+  bool useDataFile(Parameters::useDataFile176,2663
+  std::string dataFileName(Parameters::dataFileName181,2718
+  std::string resultsFileName(Parameters::resultsFileName186,2780
+  int everyTStep(Parameters::everyTStep191,2846
+  bool increaseTimeStep(Parameters::increaseTimeStep196,2900
+  double stepResolution(Parameters::stepResolution201,2965
+  double totalDuration(Parameters::totalDuration206,3030
+  bool inVacuum(Parameters::inVacuum211,3093
+  bool injIntEne(Parameters::injIntEne216,3144
+  double relMassFrac(Parameters::relMassFrac221,3195
+  bool slowEnergization(Parameters::slowEnergization227,3259
+  bool useResultsFile(Parameters::useResultsFile232,3326
+  std::string lcFile(Parameters::lcFile237,3389
+  bool finalTStep(Parameters::finalTStep242,3441
+  double shocLoc(Parameters::shocLoc247,3496
+  double Up1(Parameters::Up1252,3568
+  double Up2(Parameters::Up2257,3608
+  double Up3(Parameters::Up3262,3650
+  double Up4(Parameters::Up4267,3692
+  double Up5(Parameters::Up5272,3734
+  bool SplitLC(Parameters::SplitLC277,3774
+  bool loadPrevSim_;Parameters::loadPrevSim_283,3850
+  bool dumpActive_;Parameters::dumpActive_284,3871
+  double jetLuminosity_;Parameters::jetLuminosity_285,3891
+  double openingAngle_;Parameters::openingAngle_286,3916
+  double viewingAngle_;Parameters::viewingAngle_287,3940
+  double sourceDistance_;Parameters::sourceDistance_288,3964
+  double ejectionGap_;Parameters::ejectionGap_289,3990
+  int duration_;Parameters::duration_290,4013
+  double GammaMax_;Parameters::GammaMax_291,4030
+  double GammaMin_;Parameters::GammaMin_292,4050
+  double width_;Parameters::width_293,4070
+  double thermalEne_;Parameters::thermalEne_294,4087
+  double EintKine_;Parameters::EintKine_295,4109
+  double EMagnetic_;Parameters::EMagnetic_296,4129
+  double pLawIndex_;Parameters::pLawIndex_297,4150
+  double gMin_;Parameters::gMin_298,4171
+  double gMax_;Parameters::gMax_299,4187
+  double nuMin_;Parameters::nuMin_300,4203
+  double nuMax_;Parameters::nuMax_301,4220
+  int nuPoints_;Parameters::nuPoints_302,4237
+  int gammaPoints_;Parameters::gammaPoints_303,4254
+  bool individual_frequencies_;Parameters::individual_frequencies_304,4274
+  double nu_1_;Parameters::nu_1_305,4306
+  double nu_2_;Parameters::nu_2_306,4322
+  bool useShellFile_;Parameters::useShellFile_307,4338
+  bool increaseTimeStep_;Parameters::increaseTimeStep_308,4360
+  bool useDataFile_;Parameters::useDataFile_309,4386
+  bool useResultsFile_;Parameters::useResultsFile_310,4407
+  std::string shellFile_;Parameters::shellFile_311,4431
+  std::string dataFile_;Parameters::dataFile_312,4457
+  std::string resultsFile_;Parameters::resultsFile_313,4482
+  int everyTStep_;Parameters::everyTStep_314,4510
+  std::string lcFile_;Parameters::lcFile_315,4529
+  double stepResolution_;Parameters::stepResolution_316,4552
+  double totalDuration_;Parameters::totalDuration_317,4578
+  bool inVacuum_;Parameters::inVacuum_318,4603
+  bool injIntEne_;Parameters::injIntEne_319,4621
+  double relMassFrac_;Parameters::relMassFrac_320,4640
+  bool slowEnergization_;Parameters::slowEnergization_321,4663
+  bool finalTStep_;Parameters::finalTStep_324,4739
+  double shocLoc_;Parameters::shocLoc_325,4759
+  bool split;Parameters::split327,4801
+  double up1;Parameters::up1328,4815
+  double up2;Parameters::up2329,4829
+  double up3;Parameters::up3330,4843
+  double up4;Parameters::up4331,4857
+  double up5;Parameters::up5332,4871
+
+physcon.hh,890
+#define PHYSCON_HH12,677
+class PhysicalConstants 16,733
+  PhysicalConstants(PhysicalConstants::PhysicalConstants18,767
+  double mc2(PhysicalConstants::mc232,1425
+  const double c;PhysicalConstants::c33,1470
+  const double e;PhysicalConstants::e34,1488
+  const double m_e;PhysicalConstants::m_e35,1506
+  const double pi;PhysicalConstants::pi36,1526
+  const double sigma_t;PhysicalConstants::sigma_t37,1545
+  const double h;PhysicalConstants::h38,1569
+  const double alpha_f;PhysicalConstants::alpha_f39,1587
+  const double epsilon_0;PhysicalConstants::epsilon_040,1611
+  const double k;PhysicalConstants::k41,1637
+  const double pc;PhysicalConstants::pc42,1655
+  const double sigma;PhysicalConstants::sigma43,1674
+  const double h_keV;PhysicalConstants::h_keV44,1696
+  const double mu_0;PhysicalConstants::mu_045,1718
+const PhysicalConstants physcon;49,1746
+
+radiation.hh,150
+#define RADIATION_H12,678
+class Radiation20,869
+  std::vector<double> *nu;Radiation::nu37,1272
+  std::vector<double> *iNu;Radiation::iNu38,1299
+
+shells.hh,4953
+#define SHELLS_HH12,676
+class Shells23,852
+  inline double getTimeOfInjection(Shells::getTimeOfInjection95,2593
+  inline bool getShellId(Shells::getShellId101,2698
+  inline void setShellId(Shells::setShellId106,2752
+  inline double getShellGamma(Shells::getShellGamma111,2812
+  inline double getShellMass(Shells::getShellMass116,2871
+  inline double getShellVolume(Shells::getShellVolume121,2928
+  inline void setShellVolume(Shells::setShellVolume126,2986
+  inline double getShellArea(Shells::getShellArea132,3084
+  inline double setShellArea(Shells::setShellArea137,3141
+  inline double getShellWidth(Shells::getShellWidth142,3204
+  inline double getOuterRadius(Shells::getOuterRadius149,3326
+  inline double setOuterRadius(Shells::setOuterRadius154,3384
+  inline double getInnerRadius(Shells::getInnerRadius160,3512
+  inline double setInnerRadius(Shells::setInnerRadius165,3570
+  inline double getShellInRad(Shells::getShellInRad172,3733
+  inline void setShellInRad(Shells::setShellInRad177,3790
+  inline double getShellOuRad(Shells::getShellOuRad182,3853
+  inline void setShellOuRad(Shells::setShellOuRad187,3910
+  inline double getShellBeta(Shells::getShellBeta192,3973
+  inline void setInternalEnergy(Shells::setInternalEnergy197,4057
+  inline double getInternalEnergy(Shells::getInternalEnergy210,4230
+  inline double getThermalEnergy(Shells::getThermalEnergy215,4295
+  inline void setThermalEnergy(Shells::setThermalEnergy220,4366
+  inline double getLocation(Shells::getLocation226,4446
+  inline void setLocation(Shells::setLocation234,4577
+  inline void setIdFalse(Shells::setIdFalse241,4650
+  inline int getMergeCount(Shells::getMergeCount246,4705
+  inline double getExpansionBeta(Shells::getExpansionBeta252,4767
+  inline void setExpansionBeta(Shells::setExpansionBeta257,4837
+   inline double getPLawNorm(Shells::getPLawNorm262,4917
+  inline void setPLawNorm(Shells::setPLawNorm269,4977
+  inline void nuWrite(Shells::nuWrite274,5038
+  inline void copyINu(Shells::copyINu279,5111
+  inline void copyTau(Shells::copyTau284,5188
+  inline void nuClear(Shells::nuClear289,5261
+  inline void tauWrite(Shells::tauWrite294,5316
+  inline void tauClear(Shells::tauClear299,5392
+  inline std::vector<double> iNuVals(Shells::iNuVals304,5444
+  inline std::vector<double> tauVals(Shells::tauVals310,5516
+  inline std::vector<double> eleDistVals(Shells::eleDistVals315,5583
+  inline std::vector<double> gammaVals(Shells::gammaVals320,5660
+  inline double getGammaMin(Shells::getGammaMin326,5733
+  inline void setGammaMin(Shells::setGammaMin331,5794
+  inline double getGammaMax(Shells::getGammaMax336,5863
+  inline void setGammaMax(Shells::setGammaMax341,5924
+  inline double getBEneDens(Shells::getBEneDens346,5995
+  inline void setBEneDens(Shells::setBEneDens351,6053
+  inline double getMagPressure(Shells::getMagPressure356,6119
+  inline double setMagneticPressure(Shells::setMagneticPressure362,6186
+  inline void setPrevTime(Shells::setPrevTime367,6289
+  inline double getPrevTime(Shells::getPrevTime372,6358
+  inline double getTEnergize(Shells::getTEnergize379,6461
+  inline void setTEnergize(Shells::setTEnergize384,6523
+  inline double getIntEfrac(Shells::getIntEfrac389,6591
+  inline void setIntEfrac(Shells::setIntEfrac394,6651
+  inline double getIntEavail(Shells::getIntEavail399,6723
+  inline void setIntEavail(Shells::setIntEavail404,6785
+  inline void shockShell(Shells::shockShell409,6865
+  inline bool shellShocked(Shells::shellShocked414,6918
+  inline void setShellShocked(Shells::setShellShocked420,7032
+  double ti;Shells::ti428,7112
+  double mass;Shells::mass429,7125
+  double gamma;Shells::gamma430,7140
+  double ienergy;Shells::ienergy431,7156
+  double width;Shells::width432,7174
+  double betaExpansion;Shells::betaExpansion433,7219
+  double x_l;Shells::x_l434,7243
+  double x_u;Shells::x_u435,7311
+  double r_l;Shells::r_l436,7325
+  double r_u;Shells::r_u437,7362
+  double vol;Shells::vol438,7376
+  double area;Shells::area439,7390
+  double egammaMin;Shells::egammaMin440,7405
+  double egammaMax;Shells::egammaMax441,7425
+  int mergeCount;Shells::mergeCount442,7445
+  bool shell;Shells::shell443,7463
+  double pNorm;Shells::pNorm444,7477
+  double BEDens;Shells::BEDens445,7493
+  double magPressure;Shells::magPressure446,7510
+  double shellCentre;Shells::shellCentre447,7532
+  std::vector<double> *iNuGrid;Shells::iNuGrid449,7581
+  std::vector<double> *gammaGrid;Shells::gammaGrid450,7613
+  std::vector<double> *egamma;Shells::egamma451,7647
+  std::vector<double> *tau;Shells::tau453,7679
+  double tPrev;Shells::tPrev454,7707
+  double shellThermEner;Shells::shellThermEner455,7723
+  double tEnergize;Shells::tEnergize456,7748
+  double fracEInt;Shells::fracEInt457,7808
+  double intEavail;Shells::intEavail458,7827
+  bool shocked;Shells::shocked459,7847
+
+simulation.hh,153
+#define SIMULATION_HH14,716
+class Simulation25,927
+  Container *liveShells;Simulation::liveShells42,1148
+  Evolution *time;Simulation::time43,1173

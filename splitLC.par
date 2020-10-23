@@ -1,0 +1,12 @@
+split? = 0
+//lightcurve1 upto up1
+upper_1 = 3.e8
+//lightcurve2 from up1 to up2
+upper_2 = 9.e8
+//lightcurve3 from up2 to up3
+upper_3 = 3.e10
+//lightcurve4 from up3 to up4
+upper_4 = 3.e11
+//lightcurve5 from up4 to up5
+upper_5 = 3.e12
+//lightcurve6 from up6

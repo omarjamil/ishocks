@@ -1,0 +1,20 @@
+For the error when compiling with gfortran.
+
+In file shell_launcher.f: line 18
+                          line 126
+                          line 147
+                          line 216
+ 
+          change "name" to "file"
+
+For the warning when compiling with gfortran:
+
+In file shell_launcher.f: line 327
+
+          move the paranthesis at column 33 infront of the negative
+          sign i.e.
+          
+          mmed=(1.+(f/p(2))**p(4))**-(p(3)/p(4))  
+to
+        
+          mmed=(1.+(f/p(2))**p(4))**(-p(3)/p(4))  

@@ -1,0 +1,13 @@
+//Parameters file:
+
+input_file = temp.dat
+output_file = scar.dat
+
+//1=fast Lomb-Scargle; 2=slow Lomb-Scargle; 3=FFT
+analysis_choice = 1
+
+//oversampling typically 4 or above
+oversampling_factor = 4
+
+//frequency factor = hi_freq/Nyquist_freq.
+frequency_factor = 0.1

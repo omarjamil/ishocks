@@ -1,0 +1,11 @@
+Just some definitions; see Numerical Recipes for details.
+
+Nyquist frequency = 1/2*Time span = 1/2T
+where time span (T) = t_max - t_min
+
+Number of freq. points returned = 0.5 * ofac * hifac * N
+
+Oversampling factor (ofac) is typically 4 or above.
+
+f_c = N/2T = N*Nyquist frequency
+High frequency factor (hifac) = hi_freq/f_c 
